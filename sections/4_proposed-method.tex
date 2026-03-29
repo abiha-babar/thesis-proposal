@@ -1,0 +1,26 @@
+\section{Proposed Method}
+\label{sec:method}
+
+\subsection{The Steps of the Experiment}
+
+First, 500 test documents will be created. These will look like real invoices and administrative forms, but they will use made-up data so there are no privacy issues. Every document will have several pieces of information in it, such as a vendor name, a total amount, a date, and a reference number. Before the experiment starts, a complete answer key will be prepared for every single document, listing exactly what the correct answer is for every field.
+
+Next, the same 500 documents with the exact same instruction will be sent to each AI being tested. Both the local AI running on the laptop and the paid online AI will receive identical inputs. The instruction will be something like: ``Read this document and return the vendor name, total amount, and date in a structured format.'' The AI will return its answers in a simple, organized layout, for example: \texttt{\{"vendor": "ABC Ltd", "total": "\$500.00", "date": "2026-01-15"\}}.
+
+A Python script will automatically compare what the AI returned against the answer key, record whether each answer was right or wrong, and measure exactly how long each AI took to respond. The cost of the online AI service will be recorded from its billing system. The cost of running the local AI will be calculated based on how much electricity the laptop used during the test, plus a small portion of the laptop's purchase price.
+
+\subsection{What Will Be Measured}
+
+\begin{itemize}
+    \item \textbf{Accuracy:} For each piece of information the AI needed to extract, did it get exactly the right answer? If yes, it scores a 1. If no, it scores a 0. The final accuracy is reported as a percentage of all correct answers across all 500 documents.
+
+    \item \textbf{Speed:} How long did each AI take to process one document? This will be measured in milliseconds and averaged across all 500 documents for each AI.
+
+    \item \textbf{Cost Per Document:} For the online AI, this comes directly from the billing records. For the local AI, this is calculated from electricity used plus a small share of the laptop's cost spread over three years of use.
+
+    \item \textbf{Breakeven Point:} Using the cost-per-document numbers above, this is the exact number of daily documents at which the total cost of the local option becomes equal to and then lower than the total cost of the online service over one year.
+\end{itemize}
+
+\subsection{Test Documents}
+
+All 500 test documents will be created from scratch, designed to look like real invoices and forms but using completely made-up information. This means there are no privacy concerns, and the answer key is 100\% known and verified before the test begins. The documents will have different layouts and a variety of field values so that the results reflect realistic conditions, not just one simple type of document.

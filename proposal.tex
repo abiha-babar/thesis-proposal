@@ -1,0 +1,90 @@
+\documentclass[a4paper, titlepage, 12pt]{article}
+\usepackage[left=3cm, right=3cm, top=4cm, bottom=4cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{color}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{graphicx}
+\usepackage[square,sort,comma,numbers]{natbib}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{parskip}
+
+% -----------------------------------------------
+% STUDENT INFORMATION
+% -----------------------------------------------
+\newcommand{\thesisTitle}{Cost-Benefit Analysis and Performance Evaluation of Local Small Language Models vs.\ Cloud-Based Large Language Models for Automated Data Extraction}
+\newcommand{\name}{Abiha Babar}
+\newcommand{\studentID}{S2025114006}
+\newcommand{\timeFrame}{2025 -- 2026}
+\newcommand{\supervisor}{}   % Left empty intentionally
+\newcommand{\thesisType}{Master's}
+
+% -----------------------------------------------
+
+\newcommand\todo[1]{\colorbox{yellow}{#1}}
+\setlength{\bibsep}{0.0pt}
+
+\begin{document}
+
+% -----------------------------------------------
+% TITLE PAGE
+% -----------------------------------------------
+\begin{titlepage}
+\begin{center}
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.45\linewidth]{images/umt_logo.png}
+\end{figure}
+
+\vspace{0.5cm}
+
+\LARGE{\textbf{University of Management and Technology}}\\[0.2cm]
+\normalsize{Faculty of Information Technology}\\[0.5cm]
+
+\rule{\linewidth}{0.4pt}\\[0.4cm]
+\large{Proposal for \thesisType{} Thesis}\\[0.4cm]
+\rule{\linewidth}{0.4pt}\\[0.8cm]
+
+\Large{\textbf{\thesisTitle}}\\[1cm]
+
+\large{Submitted by:}\\[0.3cm]
+\Large{\textbf{\name}}\\[0.2cm]
+\large{\textbf{Student ID:} \studentID}\\[0.5cm]
+
+\large{Time Frame: \timeFrame}\\[1.5cm]
+
+\large{\textbf{Supervisor:}}\\[0.3cm]
+\large{\supervisor}\\[0.3cm]
+\makebox[3in]{\hrulefill}\\[0.1cm]
+\small{(Signature)}\\[1.5cm]
+
+\large{March 2026}
+
+\end{center}
+\end{titlepage}
+
+% -----------------------------------------------
+% SECTIONS
+% -----------------------------------------------
+\input{sections/1_overview}
+\input{sections/2_background}
+\input{sections/3_literature-review}
+\input{sections/4_proposed-method}
+\input{sections/5_thesis-structure}
+\newpage
+\input{sections/6_project-plan}
+
+% -----------------------------------------------
+% REFERENCES
+% -----------------------------------------------
+\clearpage
+\bibliographystyle{plain}
+{\small
+\bibliography{references}
+}
+
+\end{document}

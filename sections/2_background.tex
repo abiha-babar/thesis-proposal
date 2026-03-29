@@ -1,0 +1,24 @@
+\section{Background and General Goals}
+\label{sec:background}
+
+\subsection{Background}
+
+Data extraction means giving an AI a document, like an invoice or a registration form, and asking it to find and copy out specific pieces of information. For example: ``What is the total amount?'' or ``What is the applicant's name?'' This kind of task is needed every day in schools, hospitals, banks, and government offices where large numbers of forms and documents must be processed quickly and correctly.
+
+Right now, most organizations use a paid online AI service to do this. They upload their documents to the internet, the AI reads them, and sends back the answers. This works well, but every upload costs a small amount of money. When an organization processes thousands of documents every day, those small costs become a very large monthly expense. On top of that, sending private documents to someone else's server over the internet creates a serious privacy risk, especially in sensitive fields like healthcare or banking.
+
+A newer option is now available. Researchers have found ways to make large AI models much smaller and lighter, so they can run on a regular laptop without needing the internet at all \cite{dettmers2022llmint8, frantar2022gptq}. This means an organization could download an AI tool, keep it on their own computer, process as many documents as they want for free, and never send private data anywhere. The problem is that nobody has done a proper, honest test to find out if these smaller local AI tools are good enough and at what point they actually save money compared to the paid online option.
+
+\subsection{Statement of Objectives}
+
+This thesis will do three things:
+
+\begin{enumerate}
+    \item Test and compare how accurately a local AI tool and a paid online AI service extract information from the same set of documents, under exactly the same conditions.
+    \item Measure and compare how fast each option is, specifically how long it takes from sending a document to receiving the extracted information.
+    \item Calculate the exact number of daily documents at which the total cost of running a local AI tool becomes cheaper than paying for the online AI service.
+\end{enumerate}
+
+\subsection{Significance of the Project}
+
+This research answers a question that real organizations are facing right now. As privacy laws get stricter and online AI costs keep growing, choosing between a local AI tool and a paid online service has very real financial and legal consequences. This thesis will give organizations clear, honest numbers rather than marketing claims, so they can make a smarter decision that fits their own situation. The findings will also add new knowledge to the field of AI deployment, which is an area that is growing fast but still lacks practical, independent research.
