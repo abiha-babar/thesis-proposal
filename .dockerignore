@@ -1,0 +1,9 @@
+.git
+docs
+*.pdf
+*.log
+*.aux
+*.bbl
+*.blg
+*.out
+*.toc

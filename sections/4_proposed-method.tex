@@ -1,7 +1,7 @@
 \section{Proposed Method}
 \label{sec:method}
 
-\subsection{The Steps of the Experiment}
+\subsection{Procedure}
 
 First, 500 test documents will be created. These will look like real invoices and administrative forms, but they will use made-up data so there are no privacy issues. Every document will have several pieces of information in it, such as a vendor name, a total amount, a date, and a reference number. Before the experiment starts, a complete answer key will be prepared for every single document, listing exactly what the correct answer is for every field.
 
@@ -9,7 +9,7 @@ Next, the same 500 documents with the exact same instruction will be sent to eac
 
 A Python script will automatically compare what the AI returned against the answer key, record whether each answer was right or wrong, and measure exactly how long each AI took to respond. The cost of the online AI service will be recorded from its billing system. The cost of running the local AI will be calculated based on how much electricity the laptop used during the test, plus a small portion of the laptop's purchase price.
 
-\subsection{What Will Be Measured}
+\subsection{Measures}
 
 \begin{itemize}
     \item \textbf{Accuracy:} For each piece of information the AI needed to extract, did it get exactly the right answer? If yes, it scores a 1. If no, it scores a 0. The final accuracy is reported as a percentage of all correct answers across all 500 documents.
