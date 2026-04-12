@@ -1,24 +1,53 @@
 \section{Proposed Method}
 \label{sec:method}
 
+\subsection{Systems Under Evaluation}
+
+This study evaluates four AI systems in parallel:
+
+\begin{enumerate}
+    \item \textbf{Gemma~4 E4B} (Google DeepMind, April 2026) --- a multimodal edge SLM with 4.5B active parameters, chosen for its strong raw OCR fidelity and native offline operation \cite{gemma4_2026}.
+    \item \textbf{Phi-4 Mini Multimodal} (Microsoft) --- a 3.8B-parameter model that applies a multi-crop vision strategy and Group Query Attention, specifically optimised for document layout analysis on constrained hardware \cite{phi4mini_2025}.
+    \item \textbf{Qwen2.5-VL 3B} (Alibaba) --- a 3B-parameter model that achieves state-of-the-art structured Key Information Extraction through native absolute-coordinate spatial reasoning, making it particularly well suited to producing schema-conformant JSON output \cite{qwen25vl_2025}.
+    \item \textbf{Cloud LLM baseline} --- a leading commercially available cloud API (e.g., GPT-4o or Gemini~1.5~Flash), representing current best-practice for online automated document extraction.
+\end{enumerate}
+
+Including three architecturally distinct local models ensures that conclusions about on-device deployment reflect the capabilities of the class in general, rather than the idiosyncrasies of any single implementation.
+
 \subsection{Procedure}
 
 First, 500 test documents will be created. These will look like real invoices and administrative forms, but they will use made-up data so there are no privacy issues. Every document will have several pieces of information in it, such as a vendor name, a total amount, a date, and a reference number. Before the experiment starts, a complete answer key will be prepared for every single document, listing exactly what the correct answer is for every field.
 
-Next, the same 500 documents with the exact same instruction will be sent to each AI being tested. The local AI under evaluation will be \textbf{Gemma~4} (specifically the E4B edge variant released by Google DeepMind in April~2026), selected because it is free, fully open-weight under the Apache~2.0 licence, runs entirely offline on a standard laptop or mobile device, and can process document images natively without a separate OCR engine \cite{gemma4_2026}. Both the local Gemma~4 model and the paid online AI service will receive identical inputs. The instruction will be something like: ``Read this document and return the vendor name, total amount, and date in a structured format.'' The AI will return its answers in a simple, organized layout, for example: \texttt{\{``vendor'': ``ABC Ltd'', ``total'': ``\$500.00'', ``date'': ``2026-01-15''\}}.
+Next, every document will be sent to every system under evaluation using \textbf{three prompt variants}:
 
-A Python script will automatically compare what the AI returned against the answer key, record whether each answer was right or wrong, and measure exactly how long each AI took to respond. The cost of the online AI service will be recorded from its billing system. The cost of running the local AI will be calculated based on how much electricity the laptop used during the test, plus a small portion of the laptop's purchase price.
+\begin{enumerate}
+    \item \textbf{Prompt~A (Brief instruction):} A concise, one-sentence command such as: \emph{``Extract the vendor name, total amount, and date from this document.''}
+    \item \textbf{Prompt~B (Detailed instruction):} A paragraph-level prompt that explains the expected fields, defines edge cases (e.g., what to do when a field is absent), and instructs the model to be precise.
+    \item \textbf{Prompt~C (JSON-output instruction):} An instruction that explicitly requests a structured response, for example: \emph{``Read this document and return only a JSON object with keys vendor, total, and date. Do not include any other text.''}
+\end{enumerate}
+
+Accuracy results will be reported separately for each prompt variant. The best-performing variant for each system will then be used as the basis for the main accuracy comparison, so that no system is unfairly disadvantaged by a mismatch between the prompt style and its instruction-tuning. Each local SLM will be run on the same laptop hardware so that latency and energy measurements are directly comparable.
+
+A Python script will automatically compare the AI's output against the answer key, record whether each answer was correct, and measure exactly how long each system took to respond from request submission to final output received.
 
 \subsection{Measures}
 
 \begin{itemize}
-    \item \textbf{Accuracy:} For each piece of information the AI needed to extract, did it get exactly the right answer? If yes, it scores a 1. If no, it scores a 0. The final accuracy is reported as a percentage of all correct answers across all 500 documents.
+    \item \textbf{Accuracy:} For each piece of information the AI extracted, did it return the correct value? Results are reported as a percentage of correct fields across all 500 documents, broken down by prompt variant (A, B, C) and then summarised using the best-performing variant.
 
-    \item \textbf{Speed:} How long did each AI take to process one document? This will be measured in milliseconds and averaged across all 500 documents for each AI.
+    \item \textbf{Speed (Latency):} End-to-end response time per document in milliseconds, averaged across all 500 documents for each system and each prompt variant.
 
-    \item \textbf{Cost Per Document:} For the online AI, this comes directly from the billing records. For the local AI, this is calculated from electricity used plus a small share of the laptop's cost spread over three years of use.
+    \item \textbf{Cost Per Document:}
+    \begin{itemize}
+        \item \emph{Cloud AI:} Cost taken directly from API billing records (price per token multiplied by tokens consumed).
+        \item \emph{Local SLMs:} Calculated as the sum of energy cost plus amortised hardware cost, as follows:
+            \begin{itemize}
+                \item \textbf{Energy measurement:} On macOS (Apple Silicon), CPU, GPU, and Apple Neural Engine wattage will be logged using the \texttt{powermetrics} command-line utility at 100\,ms sampling intervals, scoped precisely to the start and end of each inference call. On Linux (x86/Nvidia), \texttt{powertop} will be used for system baseline and NVIDIA Management Library (NVML) will capture GPU wattage. Watt readings will be multiplied by elapsed time (in hours) and the local electricity tariff (PKR/kWh) to yield energy cost per document.
+                \item \textbf{Hardware amortisation:} The purchase price of the test laptop is spread evenly over an assumed three-year useful life using \textbf{straight-line depreciation} (annual depreciation $=$ cost $\div$ 3). The per-document hardware cost is then: $(\text{annual depreciation} \div 365) \div \text{documents processed per day}$. This makes the cost model fully reproducible and auditable.
+            \end{itemize}
+    \end{itemize}
 
-    \item \textbf{Breakeven Point:} Using the cost-per-document numbers above, this is the exact number of daily documents at which the total cost of the local option becomes equal to and then lower than the total cost of the online service over one year.
+    \item \textbf{Breakeven Point:} Using the per-document cost figures above, the daily document volume at which each local SLM's total annual cost equals and then falls below the cloud service's total annual cost will be determined algebraically and verified by plotting cost curves.
 \end{itemize}
 
 \subsection{Test Documents}
