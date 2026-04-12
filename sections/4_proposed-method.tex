@@ -3,15 +3,23 @@
 
 \subsection{AI Systems Being Tested}
 
-This study will test four AI systems. Three of them are local models --- meaning they run on a laptop with no internet connection --- and one is a paid online service. Testing three different local models (instead of just one) is important because it means the results will say something useful about local AI tools in general, not just about one specific model \cite{gemma4_phi4_qwen3_2026}.
+This study will test several AI systems using two groups. The first group is made up of local models that run on a regular laptop with no internet connection, served through a free, open-source tool called Ollama \cite{ollama_2024}. Ollama makes it easy to download and run language models locally by handling all the setup automatically. The second group is made up of paid online AI services accessed through their APIs. Testing three different local models (instead of just one) is important because the results will then say something useful about local AI tools in general, not just about one specific model \cite{gemma4_phi4_qwen3_2026}.
 
-The four systems are:
+\subsubsection*{Local Models (run via Ollama \cite{ollama_2024})}
 
 \begin{enumerate}
-    \item \textbf{Gemma~4 E4B} (Google DeepMind, 2026) --- a local model with 4.5 billion active parameters that runs fully offline, can read document images without a separate OCR tool, and is free to download and use \cite{gemma4_2026}.
-    \item \textbf{Phi-4 Mini Multimodal} (Microsoft, 2025) --- a local model with 3.8 billion parameters that splits document images into up to 36 smaller sections to keep fine text details readable, giving strong results on document understanding tasks \cite{phi4mini_2025}.
-    \item \textbf{Qwen2.5-VL 3B} (Alibaba, 2025) --- a local model with 3 billion parameters that is especially good at pulling out structured information like form fields and table rows, and can return answers as a JSON object directly from a document image \cite{qwen25vl_2025}.
-    \item \textbf{Cloud AI baseline} --- a leading paid online AI service (such as GPT-4o), which represents what many organizations currently use for automated document processing.
+    \item \textbf{\texttt{deepseek-ocr}} (DeepSeek AI) --- a document-focused vision-language model available on Ollama's model library, designed for reading and extracting text from images and scanned documents \cite{deepseek_ocr_2024}.
+    \item \textbf{\texttt{gemma4:e4b}} (Google DeepMind, 2026) --- a local model with 4.5 billion active parameters that can read document images without a separate OCR tool and runs fully offline \cite{gemma4_2026}.
+    \item \textbf{\texttt{qwen3.5:4b}} (Alibaba, 2025) --- a 4-billion-parameter model that is strong at understanding and pulling out structured information from documents \cite{qwen3_2025}.
+    \item \textbf{\texttt{Phi-4-multimodal-instruct}} (Microsoft, 2025, \textit{optional}) --- a multimodal model that handles document images well through a multi-crop processing strategy \cite{phi4mini_2025}. This model will be included in the study if hardware resources allow; otherwise it will be evaluated as a secondary experiment.
+\end{enumerate}
+
+\subsubsection*{Cloud API Models}
+
+\begin{enumerate}
+    \item \textbf{GPT-4o} (OpenAI) --- a leading multimodal cloud model widely used for document understanding tasks, accessed via the OpenAI API \cite{openai_gpt4o_2024}.
+    \item \textbf{Gemini 3.1 Pro} (Google DeepMind) --- Google's most capable multimodal cloud model, accessed via the Google AI API \cite{google_gemini_2025}.
+    \item \textbf{Gemini 2.0 Flash} (Google DeepMind, \textit{optional third}) --- a faster and cheaper version of Gemini, included to show how a budget cloud option compares to the local models \cite{google_gemini_2025}.
 \end{enumerate}
 
 \subsection{Procedure}
@@ -28,7 +36,7 @@ Each document will then be sent to every AI system three times using three diffe
 
 Results will be recorded separately for all three instruction versions. For the main comparison between systems, the best-performing version for each system will be used. This way, no system is unfairly penalised because its instruction style happened to be a bad fit.
 
-All three local models will run on the same laptop, so speed and energy readings can be compared directly. A Python script will automatically check each AI's answers against the answer key, record whether each field was correct, and measure how long the AI took to respond.
+All local models will be downloaded and run through Ollama \cite{ollama_2024} on the same laptop, so speed and energy readings are directly comparable across models. The cloud models will be accessed through their respective APIs, and the exact token counts and costs will be logged from the billing records. A Python script will automatically check each AI's answers against the answer key, record whether each field was correct, and measure how long the AI took to respond.
 
 \subsection{Measures}
 
