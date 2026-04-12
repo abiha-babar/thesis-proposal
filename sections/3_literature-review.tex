@@ -13,6 +13,64 @@ Third, researchers have studied how to measure AI accuracy fairly. Peer et al.\ 
 
 Fourth, Strubell et al.\ \cite{strubell2019energy} studied how much energy and money it costs to run AI systems and provided a clear method for calculating those costs. Wei et al.\ \cite{wei2022emergent} also studied the general abilities and limits of large AI models, which helps explain why some models perform better than others on specific tasks.
 
+\subsection{Summary of Key Related Work (2024--2026)}
+
+Table~\ref{tab:related-work} gives a quick overview of the most directly related studies from the last two years, showing what each one found, how it was done, and what question it left unanswered.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Summary of Related Work (2024--2026)}
+\label{tab:related-work}
+\begin{tabular}{|p{0.7cm}|p{2.5cm}|p{3.7cm}|p{3.2cm}|p{3.7cm}|}
+\hline
+\textbf{Year} & \textbf{Study} & \textbf{Key Finding} & \textbf{Methodology} & \textbf{Gap Left} \\
+\hline
+2024 &
+Peer et al.\ \cite{anlsstar_2024} \newline (ANLS*) &
+Introduced a metric that fairly scores generative LLM document extraction, giving partial credit for near-correct answers &
+Extended ANLS with hierarchical JSON tree matching using the Hungarian algorithm &
+Did not compare local vs.\ cloud models or include any cost or latency analysis \\
+\hline
+2024 &
+TokenPowerBench \cite{tokenpowerbench_2024} &
+Provided a reproducible method to measure energy used per LLM inference call on real hardware &
+Software-level power profiling using \texttt{powermetrics} and NVML for GPU wattage &
+No document extraction task; no cost-vs-accuracy comparison provided \\
+\hline
+2024 &
+Shirazi et al.\ \cite{arial_2024} \newline (ARIAL) &
+Agentic pipeline for document VQA with exact pixel-level answer localization, beating prior end-to-end models &
+Modular OCR + RAG retrieval + fine-tuned SLM for final answer generation &
+Complex system not suited for simple enterprise deployment; no operational cost model \\
+\hline
+2025 &
+Microsoft Research \cite{phi4mini_2025} \newline (Phi-4 Mini) &
+A 3.8B model achieves strong document understanding using a Mixture of LoRAs and a multi-crop vision strategy &
+Dynamic multi-crop vision (up to 36 crops) + DocVQA and benchmark evaluation &
+No comparison against cloud APIs; no cost or latency analysis included \\
+\hline
+2025 &
+Qwen Team \cite{qwen25vl_2025} \newline (Qwen2.5-VL) &
+Achieves state-of-the-art structured Key Information Extraction directly from document images &
+Dynamic resolution training with absolute spatial coordinates on diverse document data &
+Single model only; no local vs.\ cloud comparison; no cost model provided \\
+\hline
+2026 &
+Google DeepMind \cite{gemma4_2026} \newline (Gemma 4) &
+Runs multimodal AI efficiently on edge devices with only 4.5B active parameters per forward pass &
+Per-Layer Embeddings + alternating attention design + open multimodal benchmark evaluation &
+No cost modeling; no head-to-head test against cloud services or other local models \\
+\hline
+2026 &
+Lenovo Press \cite{lenovo_tco_2026} \newline (TCO Report) &
+On-premises AI reaches financial breakeven vs.\ cloud in under 4 months at 20\%+ hardware utilization &
+CapEx/OpEx modeling with straight-line depreciation and energy cost analysis (PUE formula) &
+No accuracy metric; no specific model tested; no document extraction task evaluated \\
+\hline
+\end{tabular}
+\end{table}
+
 \subsection{Research Gap}
 
 Even though all of these areas have been studied separately, nobody has put them all together in one place. In particular, no study has compared several local AI models --- each built in a different way and run through a common tool like Ollama --- against paid online services like GPT-4o \cite{openai_gpt4o_2024} and Gemini 3.1 Pro \cite{google_gemini_2025} on the same task, measuring accuracy, speed, and cost at the same time. Testing only one local model is a problem because if it performs badly, it is impossible to tell whether that is a weakness of that one model or a weakness of local AI tools in general \cite{gemma4_phi4_qwen3_2026}. At the same time, no study has checked whether accuracy results change depending on how the instruction to the AI is written, even though this is a well-known issue with AI models \cite{anlsstar_2024}. This thesis fills both of these gaps.
