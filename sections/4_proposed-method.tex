@@ -1,55 +1,55 @@
 \section{Proposed Method}
 \label{sec:method}
 
-\subsection{Systems Under Evaluation}
+\subsection{AI Systems Being Tested}
 
-This study evaluates four AI systems in parallel:
+This study will test four AI systems. Three of them are local models --- meaning they run on a laptop with no internet connection --- and one is a paid online service. Testing three different local models (instead of just one) is important because it means the results will say something useful about local AI tools in general, not just about one specific model \cite{gemma4_phi4_qwen3_2026}.
+
+The four systems are:
 
 \begin{enumerate}
-    \item \textbf{Gemma~4 E4B} (Google DeepMind, April 2026) --- a multimodal edge SLM with 4.5B active parameters, chosen for its strong raw OCR fidelity and native offline operation \cite{gemma4_2026}.
-    \item \textbf{Phi-4 Mini Multimodal} (Microsoft) --- a 3.8B-parameter model that applies a multi-crop vision strategy and Group Query Attention, specifically optimised for document layout analysis on constrained hardware \cite{phi4mini_2025}.
-    \item \textbf{Qwen2.5-VL 3B} (Alibaba) --- a 3B-parameter model that achieves state-of-the-art structured Key Information Extraction through native absolute-coordinate spatial reasoning, making it particularly well suited to producing schema-conformant JSON output \cite{qwen25vl_2025}.
-    \item \textbf{Cloud LLM baseline} --- a leading commercially available cloud API (e.g., GPT-4o or Gemini~1.5~Flash), representing current best-practice for online automated document extraction.
+    \item \textbf{Gemma~4 E4B} (Google DeepMind, 2026) --- a local model with 4.5 billion active parameters that runs fully offline, can read document images without a separate OCR tool, and is free to download and use \cite{gemma4_2026}.
+    \item \textbf{Phi-4 Mini Multimodal} (Microsoft, 2025) --- a local model with 3.8 billion parameters that splits document images into up to 36 smaller sections to keep fine text details readable, giving strong results on document understanding tasks \cite{phi4mini_2025}.
+    \item \textbf{Qwen2.5-VL 3B} (Alibaba, 2025) --- a local model with 3 billion parameters that is especially good at pulling out structured information like form fields and table rows, and can return answers as a JSON object directly from a document image \cite{qwen25vl_2025}.
+    \item \textbf{Cloud AI baseline} --- a leading paid online AI service (such as GPT-4o), which represents what many organizations currently use for automated document processing.
 \end{enumerate}
-
-Including three architecturally distinct local models ensures that conclusions about on-device deployment reflect the capabilities of the class in general, rather than the idiosyncrasies of any single implementation.
 
 \subsection{Procedure}
 
-First, 500 test documents will be created. These will look like real invoices and administrative forms, but they will use made-up data so there are no privacy issues. Every document will have several pieces of information in it, such as a vendor name, a total amount, a date, and a reference number. Before the experiment starts, a complete answer key will be prepared for every single document, listing exactly what the correct answer is for every field.
+Before any testing begins, 500 test documents will be created. These will look like real invoices and administrative forms but will use made-up data, so there are no privacy issues. For every document, a complete answer key will be prepared in advance that lists the exact correct answer for every field.
 
-Next, every document will be sent to every system under evaluation using \textbf{three prompt variants}:
+Each document will then be sent to every AI system three times using three different versions of the instruction. This is done because research has shown that AI models can give different results depending on how the instruction is written, so testing all three versions makes the comparison fair for every system \cite{anlsstar_2024, gemma4_phi4_qwen3_2026}:
 
 \begin{enumerate}
-    \item \textbf{Prompt~A (Brief instruction):} A concise, one-sentence command such as: \emph{``Extract the vendor name, total amount, and date from this document.''}
-    \item \textbf{Prompt~B (Detailed instruction):} A paragraph-level prompt that explains the expected fields, defines edge cases (e.g., what to do when a field is absent), and instructs the model to be precise.
-    \item \textbf{Prompt~C (JSON-output instruction):} An instruction that explicitly requests a structured response, for example: \emph{``Read this document and return only a JSON object with keys vendor, total, and date. Do not include any other text.''}
+    \item \textbf{Short instruction:} A single, simple sentence, for example: \emph{``Extract the vendor name, total amount, and date from this document.''}
+    \item \textbf{Detailed instruction:} A longer description that explains every field, says what to do if a field is missing, and asks for a precise answer.
+    \item \textbf{JSON instruction:} An instruction that asks the AI to return the answer as a structured JSON object only, for example: \emph{``Return only a JSON object with keys \texttt{vendor}, \texttt{total}, and \texttt{date}. Do not add any other text.''}
 \end{enumerate}
 
-Accuracy results will be reported separately for each prompt variant. The best-performing variant for each system will then be used as the basis for the main accuracy comparison, so that no system is unfairly disadvantaged by a mismatch between the prompt style and its instruction-tuning. Each local SLM will be run on the same laptop hardware so that latency and energy measurements are directly comparable.
+Results will be recorded separately for all three instruction versions. For the main comparison between systems, the best-performing version for each system will be used. This way, no system is unfairly penalised because its instruction style happened to be a bad fit.
 
-A Python script will automatically compare the AI's output against the answer key, record whether each answer was correct, and measure exactly how long each system took to respond from request submission to final output received.
+All three local models will run on the same laptop, so speed and energy readings can be compared directly. A Python script will automatically check each AI's answers against the answer key, record whether each field was correct, and measure how long the AI took to respond.
 
 \subsection{Measures}
 
 \begin{itemize}
-    \item \textbf{Accuracy:} For each piece of information the AI extracted, did it return the correct value? Results are reported as a percentage of correct fields across all 500 documents, broken down by prompt variant (A, B, C) and then summarised using the best-performing variant.
+    \item \textbf{Accuracy (ANLS*):} Instead of a simple yes/no correct score, this study will use a metric called ANLS* \cite{anlsstar_2024}. This metric gives partial credit for answers that are almost correct --- for example, if the AI returns ``\$150.00'' when the answer is ``150.00'', it is not counted as a total failure. ANLS* also checks structured JSON output field by field, which gives a fairer and more useful picture of real performance. Results will be shown separately for each instruction version (short, detailed, JSON) and then summarised using the best version per system.
 
-    \item \textbf{Speed (Latency):} End-to-end response time per document in milliseconds, averaged across all 500 documents for each system and each prompt variant.
+    \item \textbf{Speed:} How long each AI takes to process one document, measured from the moment the document is sent to the moment the final answer comes back. This will be recorded in milliseconds and averaged across all 500 documents for each system.
 
     \item \textbf{Cost Per Document:}
     \begin{itemize}
-        \item \emph{Cloud AI:} Cost taken directly from API billing records (price per token multiplied by tokens consumed).
-        \item \emph{Local SLMs:} Calculated as the sum of energy cost plus amortised hardware cost, as follows:
-            \begin{itemize}
-                \item \textbf{Energy measurement:} On macOS (Apple Silicon), CPU, GPU, and Apple Neural Engine wattage will be logged using the \texttt{powermetrics} command-line utility at 100\,ms sampling intervals, scoped precisely to the start and end of each inference call. On Linux (x86/Nvidia), \texttt{powertop} will be used for system baseline and NVIDIA Management Library (NVML) will capture GPU wattage. Watt readings will be multiplied by elapsed time (in hours) and the local electricity tariff (PKR/kWh) to yield energy cost per document.
-                \item \textbf{Hardware amortisation:} The purchase price of the test laptop is spread evenly over an assumed three-year useful life using \textbf{straight-line depreciation} (annual depreciation $=$ cost $\div$ 3). The per-document hardware cost is then: $(\text{annual depreciation} \div 365) \div \text{documents processed per day}$. This makes the cost model fully reproducible and auditable.
-            \end{itemize}
+        \item \emph{Online AI:} The cost comes directly from the provider's billing records --- the number of tokens used, multiplied by the price per million tokens.
+        \item \emph{Local AI models:} The cost has two parts:
+        \begin{itemize}
+            \item \textbf{Electricity:} The amount of power used during each test run will be measured using \texttt{powermetrics} on a Mac (this tool records CPU, GPU, and chip wattage in real time at 100\,ms intervals) or \texttt{powertop} on Linux \cite{tokenpowerbench_2024}. The power reading is then multiplied by the time taken and the local electricity rate (PKR/kWh) to get the energy cost per document.
+            \item \textbf{Hardware share:} The laptop's purchase price is spread out evenly over three years (this is called straight-line depreciation) \cite{lenovo_tco_2026}. The per-document share is worked out based on how many documents are processed each day. This makes the cost calculation clear, repeatable, and easy for others to check.
+        \end{itemize}
     \end{itemize}
 
-    \item \textbf{Breakeven Point:} Using the per-document cost figures above, the daily document volume at which each local SLM's total annual cost equals and then falls below the cloud service's total annual cost will be determined algebraically and verified by plotting cost curves.
+    \item \textbf{Breakeven Point:} Using the cost numbers above, this is the number of documents per day at which the total yearly cost of a local model becomes equal to, and then lower than, the total yearly cost of the online service. Results will be shown as a simple graph for each local model compared to the online service.
 \end{itemize}
 
 \subsection{Test Documents}
 
-All 500 test documents will be created from scratch, designed to look like real invoices and forms but using completely made-up information. This means there are no privacy concerns, and the answer key is 100\% known and verified before the test begins. The documents will have different layouts and a variety of field values so that the results reflect realistic conditions, not just one simple type of document.
+All 500 test documents will be made from scratch to look like real invoices and forms, but using completely made-up information. This means there are no privacy concerns, and the right answers are already known before the test starts. The documents will have different layouts, different numbers of fields, and different types of content so that the results show how each AI performs across a range of realistic situations, not just one simple type of document \cite{bujang_samplesize_2021}.
