@@ -1,239 +1,308 @@
 THESIS PROPOSAL PRESENTATION — SLIDE CONTENT OUTLINE
-Title: Evaluating On-Device Small Language Models as a Cost-Effective
-       Alternative to Cloud-Based Large Language Models for Automated
-       Document Data Extraction
 Student: Abiha Babar | S2025114006
-Slides: 15
 ================================================================
 
 
-SLIDE 1 — TITLE
+SLIDE 1 — TITLE SLIDE
 ----------------------------------------------------------------
-- Thesis title
-- Student name and ID
-- University name and logo
-- Date of presentation
+Thesis Title:   Evaluating On-Device Small Language Models as a
+                Cost-Effective Alternative to Cloud-Based Large
+                Language Models for Automated Document Data
+                Extraction
+
+Student Name:   Abiha Babar
+Student ID:     S2025114006
+
+Supervisor:     Dr. Muhammad Husnain Ashfaq
+Department:     SST
+University:     University of Management and Technology (UMT), Lahore
+
+Program:        MSSE
+Session:        Spring 2025
+Date:           April 16, 2026
 
 
-SLIDE 2 — THE PROBLEM
-----------------------------------------------------------------
-- Organizations process thousands of documents every day
-  (invoices, forms, records, receipts)
-- Copying out information by hand is slow, expensive, and
-  error-prone
-- AI can automate this — but which kind of AI, and at what cost?
+================================================================
+SLIDE 2 — PROBLEM STATEMENT (Part 1 of 2)
+================================================================
+THE PROBLEM:
+  • Organizations process thousands of documents daily
+    (invoices, forms, records, receipts)
+  • Manual data entry is slow, expensive, and error-prone
+  • AI can automate this — but which kind, and at what cost?
+
+CURRENT DOMINANT SOLUTION — Cloud-Based AI (OpenAI, Google):
+  • Charges per token → costs grow rapidly at scale
+  • Sensitive documents sent to foreign servers
+    → serious privacy and regulatory risk
+  • Not viable for resource-constrained or data-sensitive
+    environments
 
 
-SLIDE 3 — CURRENT SOLUTION: CLOUD AI
-----------------------------------------------------------------
-- Most organizations upload documents to an online AI service
-  (e.g. OpenAI, Google)
-- It works, but:
-    • Costs money every time (pay per token)
-    • Private documents leave the building — privacy risk
-    • Costs grow fast at scale
+================================================================
+SLIDE 3 — PROBLEM STATEMENT (Part 2 of 2)
+================================================================
+THE EMERGING ALTERNATIVE — On-Device Small Language Models (SLMs):
+  • Run locally on a regular laptop via Ollama (free, open-source)
+  • Fully offline — data never leaves the organization
+  • No per-token cost after setup
+
+BUT THE QUESTION REMAINS:
+  • Are they accurate enough for real document extraction?
+  • How do they compare in speed to cloud APIs?
+  • When do they become cheaper than cloud at scale?
+
+RESEARCH GAP:
+  No existing study has simultaneously compared multiple local
+  SLMs vs. cloud LLMs on the same task covering accuracy,
+  latency, prompt sensitivity, and per-document cost.
 
 
-SLIDE 4 — THE NEW OPTION: ON-DEVICE AI
-----------------------------------------------------------------
-- Small AI models that run on a regular laptop — no internet
-- Managed through Ollama (free, open-source tool)
-- Three local models this study will test:
-    • deepseek-ocr  (DeepSeek AI)
-    • gemma4:e4b    (Google DeepMind)
-    • qwen3.5:4b    (Alibaba)
-    • Phi-4-multimodal-instruct (Microsoft) — optional (if Ollama adds support)
-- Free, private, offline
-- But: are they accurate and fast enough?
+================================================================
+SLIDE 4 — RELATED WORK: 2024 STUDIES
+================================================================
+Key observation: every study below leaves at least one gap —
+  (a) no multi-model comparison   (b) no prompt-sensitivity test
+  (c) no per-document cost model
+→ This thesis is the first to address all three at once.
+
++------+----------------------+-------------------------+------------------------+----------------------------+
+| Year | Study / Source       | Contribution / Findings | Methodology            | Research Gap               |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2024 | Peer et al.          | Introduced ANLS* — a    | Extended ANLS with     | No local vs. cloud         |
+|      | (arXiv:2402.03848)   | fair metric for LLM     | hierarchical JSON tree | comparison; no cost or     |
+|      |                      | document extraction     | + Hungarian algorithm  | latency analysis           |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2024 | TokenPowerBench      | Measures energy per     | Software-level power   | No document extraction     |
+|      | (arXiv:2512.03024)   | LLM inference call on   | profiling via          | task; no cost-vs-accuracy  |
+|      |                      | real hardware           | powermetrics + NVML    | comparison included        |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2024 | Shirazi et al.       | ARIAL: agentic system   | Modular OCR + RAG      | Too complex for simple     |
+|      | (arXiv:2511.18192)   | for document VQA with   | retrieval + fine-tuned | deployment; no operational |
+|      |                      | spatial localization    | SLM for generation     | cost model provided        |
++------+----------------------+-------------------------+------------------------+----------------------------+
 
 
-SLIDE 5 — WHAT RESEARCH ALREADY TELLS US
-----------------------------------------------------------------
-Existing Work on Document Extraction:
-  - DocVQA benchmark (Mathew et al., 2021)
-  - FUNSD scanned forms (Jaume et al., 2019)
-  - CORD receipts (Park et al., 2019)
-  → Extracting data from real documents is genuinely hard
-
-Existing Work on Making Models Smaller:
-  - LLM.int8() (Dettmers et al., 2022)
-  - GPTQ compression (Frantar et al., 2022)
-  - Ollama makes local deployment easy (2024)
-  → Running capable AI on a laptop is now possible
-
-Measuring AI Accuracy Fairly:
-  - ANLS* (Peer et al., 2024) — partial credit, handles JSON
-  - BERTScore (Zhang et al., 2020) — checks meaning, not words
-  → Better metrics exist but are not widely used in comparisons
-
-
-SLIDE 6 — RELATED WORK TABLE (2024–2026)
-----------------------------------------------------------------
-
-╔══════╦══════════════════════════╦══════════════════════════════╦══════════════════════════════╦══════════════════════════════╗
-║ Year ║ Study / Source           ║ Key Finding / Contribution   ║ Methodology Used             ║ Gap Left                     ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2024 ║ Peer et al.              ║ Introduced ANLS* — a metric  ║ Extended ANLS with           ║ Did not compare local vs      ║
-║      ║ (ANLS*, arXiv:2402.03848)║ that fairly scores LLM       ║ hierarchical JSON tree       ║ cloud models or include any  ║
-║      ║                          ║ document extraction outputs  ║ matching + Hungarian algo    ║ cost or latency analysis     ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2024 ║ TokenPowerBench          ║ Provided a method to measure ║ Software-level power         ║ No document extraction task; ║
-║      ║ (arXiv:2512.03024)       ║ energy use per LLM inference ║ profiling using powermetrics ║ no cost-vs-accuracy comparison║
-║      ║                          ║ call on real hardware        ║ and NVML for GPU wattage     ║                              ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2024 ║ Shirazi et al.           ║ Agentic framework (ARIAL)    ║ Modular OCR + RAG retrieval  ║ Complex system not suited    ║
-║      ║ (ARIAL, arXiv:2511.18192)║ for document VQA with exact  ║ + fine-tuned SLM for output  ║ for simple deployment; no    ║
-║      ║                          ║ spatial answer localization  ║ generation                   ║ operational cost model       ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2025 ║ Microsoft Research       ║ Phi-4 Mini achieves strong   ║ Mixture of LoRAs + dynamic   ║ No comparison vs cloud APIs; ║
-║      ║ (arXiv:2503.01743)       ║ document understanding in a  ║ multi-crop vision (36 crops) ║ no cost or latency analysis  ║
-║      ║                          ║ compact 3.8B model           ║ + DocVQA benchmarking        ║ included                     ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2025 ║ Qwen Team (Alibaba)      ║ Qwen2.5-VL achieves state-   ║ Dynamic resolution training  ║ Single model only; no local  ║
-║      ║ (arXiv:2502.13923)       ║ of-the-art structured KIE    ║ with absolute spatial coords ║ vs cloud comparison or cost  ║
-║      ║                          ║ directly from document images║ on diverse document datasets ║ model provided               ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2026 ║ Google DeepMind          ║ Gemma 4 runs multimodal AI   ║ Per-Layer Embeddings (PLE) + ║ No cost modeling; no head-   ║
-║      ║ (Gemma 4, April 2026)    ║ efficiently on edge devices  ║ alternating attention design ║ to-head test vs cloud or     ║
-║      ║                          ║ with 4.5B active parameters  ║ + open benchmark evaluation  ║ other local models           ║
-╠══════╬══════════════════════════╬══════════════════════════════╬══════════════════════════════╬══════════════════════════════╣
-║ 2026 ║ Lenovo Press             ║ TCO framework shows on-prem  ║ CapEx/OpEx modeling with     ║ No accuracy metric; no       ║
-║      ║ (TCO Report, 2026)       ║ AI reaches breakeven vs cloud║ straight-line depreciation + ║ specific model testing or    ║
-║      ║                          ║ in under 4 months at 20%+   ║ energy cost (PUE analysis)   ║ document extraction task     ║
-║      ║                          ║ hardware utilization         ║                              ║                              ║
-╚══════╩══════════════════════════╩══════════════════════════════╩══════════════════════════════╩══════════════════════════════╝
-
-KEY OBSERVATION (point to the "Gap Left" column when presenting):
-  Every study above leaves at least one of these three things
-  unanswered:
-    (a) No multi-model comparison  — only one local model tested
-    (b) No prompt variant testing  — one fixed instruction only
-    (c) No cost model              — no price per document calculated
-  This thesis is the first study to address all three at once.
+================================================================
+SLIDE 5 — RELATED WORK: 2025–2026 STUDIES
+================================================================
++------+----------------------+-------------------------+------------------------+----------------------------+
+| Year | Study / Source       | Contribution / Findings | Methodology            | Research Gap               |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2025 | Microsoft Research   | Phi-4 Mini achieves     | Mixture of LoRAs +     | No comparison vs. cloud    |
+|      | (arXiv:2503.01743)   | strong document         | dynamic multi-crop     | APIs; no cost or latency   |
+|      |                      | understanding at 3.8B   | vision + DocVQA bench  | analysis included          |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2025 | Qwen Team — Alibaba  | Qwen2.5-VL achieves     | Dynamic resolution     | Single model only; no      |
+|      | (arXiv:2502.13923)   | SOTA structured KIE     | training + absolute    | local vs. cloud comparison |
+|      |                      | from document images    | spatial coordinates    | or cost model provided     |
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2026 | Google DeepMind      | Gemma 4 runs multimodal | Per-Layer Embeddings   | No cost modeling; no       |
+|      | (Gemma 4, Apr 2026)  | AI on edge devices      | (PLE) + alternating    | head-to-head test vs.      |
+|      |                      | (4.5B active params)    | attention design       | cloud or other local models|
++------+----------------------+-------------------------+------------------------+----------------------------+
+| 2026 | Lenovo Press         | TCO shows on-prem AI    | CapEx/OpEx modeling +  | No accuracy metric; no     |
+|      | (TCO Report, 2026)   | breaks even vs. cloud   | straight-line depn. +  | specific model testing or  |
+|      |                      | in under 4 months       | energy PUE analysis    | document extraction task   |
++------+----------------------+-------------------------+------------------------+----------------------------+
 
 
-SLIDE 7 — THE RESEARCH GAP
-----------------------------------------------------------------
-What is still missing:
-  1. No study has compared multiple local models against cloud
-     services on the same task (accuracy + speed + cost together)
-  2. No study checks how results change with instruction wording
-  3. No clear, reproducible cost model exists for local AI
+================================================================
+SLIDE 6 — SCOPE & RESEARCH QUESTIONS
+================================================================
+SCOPE:
+  • Document type:         Invoices and structured forms (synthetic)
+  • Sample size:           500 documents (statistically justified)
+  • Models tested:         3 local SLMs  vs.  2 cloud LLM APIs
+  • Instruction variants:  3 prompt styles per model
 
-→ This thesis fills all three gaps.
+RESEARCH QUESTIONS:
+  Q1: Is there a meaningful accuracy difference between local and
+      cloud AI — and does it vary with instruction wording?
 
+  Q2: How much faster or slower are local models compared to
+      cloud API services?
 
-SLIDE 8 — RESEARCH QUESTIONS
-----------------------------------------------------------------
-Q1: Is there a meaningful accuracy difference between local and
-    cloud AI — and does it change with instruction style?
-
-Q2: How much faster or slower are local models compared to
-    cloud services?
-
-Q3: At what daily document volume does a local model become
-    cheaper than a cloud service?
+  Q3: At what daily document volume does a local model become
+      cheaper than a cloud subscription?
 
 
-SLIDE 9 — THE SYSTEMS BEING TESTED
-----------------------------------------------------------------
-LOCAL MODELS (via Ollama):
-  • deepseek-ocr              — document OCR focus
-  • gemma4:e4b                — multimodal, reads images offline
-  • qwen3.5:4b                — strong at structured extraction
-  • Phi-4-multimodal-instruct — optional (if ollama adds support)
+================================================================
+SLIDE 7 — RESEARCH OBJECTIVES
+================================================================
+  1. Measure and compare extraction accuracy of local SLMs vs.
+     cloud LLMs using the ANLS* metric.
 
-CLOUD API MODELS:
-  • GPT-4o         (OpenAI)
-  • Gemini 3.1 Pro (Google)
-  • Gemini 2.0 Flash (Google) — optional third
+  2. Compare end-to-end response latency (local vs. cloud).
 
+  3. Build a reproducible per-document cost model for both
+     local (hardware + electricity) and cloud (token billing)
+     deployments.
 
-SLIDE 10 — HOW THE TEST WORKS
-----------------------------------------------------------------
-- 500 synthetic documents (invoices and forms, made-up data)
-- Answer key prepared before any test begins
-- Each document sent to each system with 3 instruction versions:
-    A — Short:    "Extract vendor name, total, and date."
-    B — Detailed: Full description of each field and rules
-    C — JSON:     "Return only a JSON object with keys..."
-- Why 3 versions? Fairness — AI results can vary by wording
-- Best version per system used for final comparison
+  4. Identify the daily document volume at which a local
+     deployment becomes cheaper than a cloud subscription.
+
+  5. Analyse how instruction wording (prompt style) affects
+     accuracy across all tested systems.
 
 
-SLIDE 11 — WHAT WILL BE MEASURED
-----------------------------------------------------------------
-ACCURACY (ANLS*):
-  - Partial credit for near-correct answers
-  - Reported per instruction version, then best version used
+================================================================
+SLIDE 8 — MODELS BEING TESTED
+================================================================
+LOCAL MODELS — via Ollama (Free, Offline)
+  +--------------------------+--------+--------+--------+
+  | Model                    | Type   | Params | Cost   |
+  +--------------------------+--------+--------+--------+
+  | deepseek-ocr             | Local  | ~2–7B  | Free   |
+  | gemma4:e4b (Google)      | Local  | 4.5B   | Free   |
+  | qwen3.5:4b (Alibaba)     | Local  | 4B     | Free   |
+  | Phi-4-multimodal (MS)*   | Local  | 3.8B   | Free   |
+  +--------------------------+--------+--------+--------+
 
-SPEED:
-  - Time from document sent → answer received (milliseconds)
-  - Averaged across all 500 documents
+CLOUD API MODELS — Pay per Token
+  +--------------------------+--------+--------+------------+
+  | Model                    | Type   | Via    | Cost       |
+  +--------------------------+--------+--------+------------+
+  | GPT-4o (OpenAI)          | Cloud  | API    | Pay/token  |
+  | Gemini 2.5 Pro (Google)  | Cloud  | API    | Pay/token  |
+  | Gemini 3.1 Pro (Google)  | Cloud* | API    | Pay/token  |
+  +--------------------------+--------+--------+------------+
 
-COST PER DOCUMENT:
-  - Cloud: billing records (tokens × price per million)
-  - Local: electricity (powermetrics on Mac / powertop on Linux)
-           + hardware cost (laptop price ÷ 3 years, per document)
-  - Breakeven point: at what volume does local become cheaper?
-
-
-SLIDE 12 — WHY 500 DOCUMENTS?
-----------------------------------------------------------------
-- Sample size is statistically justified, not a round guess
-- Formula: n = (Z² × p × (1−p)) / E²
-    p  = 0.80  (expected baseline accuracy)
-    E  = ±0.035 (margin of error)
-    Z  = 1.96  (95% confidence level)
-  → n ≈ 500 documents
-- Ensures a 4% accuracy difference between models is real,
-  not sampling noise
+* optional models
 
 
-SLIDE 13 — TIMELINE
-----------------------------------------------------------------
-Weeks 1–4:   Literature review + model and hardware selection
-Weeks 5–6:   Create 500 test documents + answer key
-Weeks 7–9:   Set up Ollama models, energy logging, API access,
-             write and test all 3 instruction versions
-Weeks 10–13: Run all tests (all systems, all instructions)
-Weeks 14–16: Analyse results, calculate costs, build charts
-Weeks 17–18: Write discussion and conclusion
-Weeks 19–20: First full draft to supervisor
-Weeks 21–22: Corrections and final submission
+================================================================
+SLIDE 9 — TOOLS, DATASET & EVALUATION METRICS
+================================================================
+TOOLS & TECHNOLOGIES:
+  • Ollama          — local model runtime (open-source, free)
+  • Python          — scripting, automation, data processing
+  • powermetrics    — energy/wattage logging on macOS
+  • powertop        — energy logging on Linux
+  • OpenAI API / Google Generative AI SDK — cloud inference
+
+DATASET:
+  • 500 synthetic invoice and structured-form documents
+    (realistic but fictitious data)
+  • Pre-built answer key for every document field
+  • Fields: vendor name, total amount, date, line items
+
+EVALUATION METRICS:
+  • ANLS* (Peer et al., 2024)      — accuracy with partial credit
+  • BERTScore (Zhang et al., 2020) — semantic similarity
+  • Latency (ms per document)
+  • Cost per document (USD)
 
 
-SLIDE 14 — WHY THIS MATTERS + CONCLUSION
-----------------------------------------------------------------
-- Cloud AI costs are growing — local models could save money
-- Privacy laws (PDPB, PECA 2025) restrict sending sensitive
-  data to foreign servers — local AI solves this
-- Rising electricity costs in Pakistan make efficiency critical
-- Aligns with HEC NRPU 2025-26 priority areas (Applied AI)
+================================================================
+SLIDE 10 — RESEARCH METHODOLOGY (Part 1 of 2)
+================================================================
+EXPERIMENTAL DESIGN:
+  • Controlled, quantitative comparison study
+  • Every model receives identical documents and instructions
+  • Results measured against a fixed, pre-built answer key
 
-Summary:
-  - 3 local models vs. 2 cloud APIs
-  - 500 documents, 3 instruction versions, fair metrics
-  - Clear, reproducible cost model
-  - Statistically justified sample size
-  → Honest numbers that organizations can actually use
+PHASE 1 — Setup (Weeks 1–6):
+  • Literature review + model & hardware selection
+  • Generate 500 synthetic test documents + answer key
+  • Configure Ollama with all local models
+  • Set up energy logging and cloud API access
+
+PHASE 2 — Data Collection (Weeks 7–13):
+  • Run each document through all 7 models
+  • Apply 3 instruction prompt variants per model:
+      A — Short:    "Extract vendor name, total, and date."
+      B — Detailed: Full field-by-field natural language prompt
+      C — JSON:     "Return only a JSON object with keys…"
+  • Log: raw output, latency (ms), energy consumption (W)
+  • Cloud: log token usage and billing records
+
+
+================================================================
+SLIDE 11 — RESEARCH METHODOLOGY (Part 2 of 2)
+================================================================
+PHASE 3 — Analysis (Weeks 14–18):
+  • Compute ANLS* and BERTScore per model per prompt variant
+  • Select best prompt per model for final comparison
+  • Calculate per-document cost:
+      Cloud → tokens × price per million
+      Local → electricity + hardware amortisation
+  • Determine breakeven volume (local vs. cloud)
+  • Statistical significance testing on accuracy differences
+
+SAMPLE SIZE JUSTIFICATION:
+  Formula:  n = (Z² × p × (1−p)) / E²
+  Values:   p = 0.80 | E = ±0.035 | Z = 1.96
+  Result:   n ≈ 500 documents
+
+  → Ensures a 4% accuracy difference is statistically real,
+    not sampling noise, at 95% confidence level.
+
+
+================================================================
+SLIDE 12 — MAJOR DELIVERABLES & EXPECTED OUTCOMES
+================================================================
+DELIVERABLES:
+  1. Synthetic dataset (500 docs + answer key) — open for reuse
+  2. Python pipeline: inference, latency logging, ANLS* scoring
+  3. Reproducible cost model (formula + spreadsheet)
+  4. Comparative charts:
+       • Accuracy by model & prompt variant
+       • Latency distribution (box plots)
+       • Cost-per-document bar chart
+       • Breakeven curve (volume vs. daily cost)
+  5. Final thesis document
+
+EXPECTED OUTCOMES:
+  • Quantified accuracy gap (or parity) between local and cloud
+  • Identification of the best-performing local model
+  • Clear breakeven volume threshold for cost savings
+  • Evidence-based guidance for local vs. cloud AI decisions
+
+
+================================================================
+SLIDE 13 — IMPLICATIONS & SIGNIFICANCE
+================================================================
+PRACTICAL IMPLICATIONS:
+  • Cost Savings: Local AI saves significantly at high document
+    volumes once the breakeven threshold is crossed.
+  • Privacy & Compliance: Documents never leave the organization
+    → supports Pakistan's PDPB and PECA 2025 requirements.
+  • Accessibility: Capable AI automation without ongoing cloud
+    costs — critical for SMEs and public-sector organizations.
+  • Energy Efficiency: Energy analysis helps organizations make
+    informed, sustainable AI infrastructure decisions.
+
+ACADEMIC SIGNIFICANCE:
+  • First study to jointly address multi-model comparison,
+    prompt-sensitivity testing, and a reproducible cost model.
+  • Aligns with HEC NRPU 2025–26 priority: Applied AI.
+  • Contributes reusable dataset, pipeline, and cost framework.
+
+
+================================================================
+SLIDE 14 — SUMMARY
+================================================================
+THESIS IN ONE SENTENCE:
+  The first head-to-head, multi-model, cost-transparent
+  comparison of on-device SLMs vs. cloud LLMs for automated
+  document data extraction.
+
+  ✓ Problem:       Manual processing is slow; cloud AI is costly
+                   and raises privacy concerns
+  ✓ Gap:           No prior work covers accuracy + latency +
+                   cost + prompt sensitivity together
+  ✓ Scope:         500 docs | 3 local + 2 cloud models | 3 prompts
+  ✓ Methodology:   Controlled experiment | ANLS* | cost model
+  ✓ Deliverables:  Dataset | pipeline | cost model | thesis
+  ✓ Significance:  Privacy compliance | cost savings | HEC aligned
+
+KEY TAKEAWAY:
+  Honest, reproducible numbers that organizations can actually
+  use to make informed AI deployment decisions.
 
 Thank you — open to questions.
 
-
-SLIDE 15 (BACKUP) — QUICK MODEL REFERENCE
-----------------------------------------------------------------
-Model                     | Type   | Params | Via    | Cost
---------------------------|--------|--------|--------|----------
-deepseek-ocr              | Local  | ~2–7B  | Ollama | Free
-gemma4:e4b                | Local  | 4.5B   | Ollama | Free
-qwen3.5:4b                | Local  | 4B     | Ollama | Free
-Phi-4-multimodal-instruct | Local  | 3.8B   | Ollama | Free*
-GPT-4o (OpenAI)           | Cloud  | N/A    | API    | Pay/token
-Gemini 3.1 Pro (Google)   | Cloud  | N/A    | API    | Pay/token
-Gemini 2.0 Flash (Google) | Cloud* | N/A    | API    | Pay/token
-
-* optional
 
 ================================================================
 END
