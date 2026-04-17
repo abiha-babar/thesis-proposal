@@ -1,87 +1,68 @@
 \section{Proposed Method}
 \label{sec:method}
 
-\subsection{Experimental Design}
+\subsection{Overview of the Experiment}
 
-This study employs a controlled within-subject design in which every benchmark task is attempted under both experimental conditions. Condition~A (the baseline) represents the conventional flat tool-use paradigm, while Condition~B (the experimental intervention) implements progressive skill disclosure via the OpenClaw \cite{openclaw_2025} framework. All other variables---the underlying language models, the task inputs, the skill library content, and the evaluation criteria---are held constant across both conditions. This design ensures that any observed differences in outcome accuracy, trajectory quality, or token efficiency are attributable exclusively to the capability-loading mechanism rather than to differences in model capability or task difficulty.
+This study will run the same set of tasks under two different setups and compare the results. In the first setup (Condition~A), the agent is given all available tools at once as a flat list in its instructions --- the standard way most agents work today. In the second setup (Condition~B), the agent uses the OpenClaw \cite{openclaw_2025} skill system, where it only sees tool names first and loads full instructions for a tool when it needs them. Everything else stays the same across both setups: the same tasks, the same models, and the same scoring method. This way, any difference in the results can only be explained by the change in how tools are loaded.
 
-\subsection{Technology Stack}
+\subsection{Tools and Software Used}
 
-All experiments are implemented in Python using the following tools. No additional agent orchestration frameworks beyond OpenClaw are required.
+No heavy frameworks are needed for this study. The full setup uses four things:
 
 \begin{itemize}
-    \item \textbf{Python 3.11:} Task dispatch, action logging, metric computation, and result storage. All measurement values are written to structured JSON files for reproducibility.
-    \item \textbf{Ollama} \cite{ollama_2024}: Local inference server for small language models. Ollama handles model download, quantisation, and GPU or CPU scheduling automatically, providing a consistent HTTP API across all local model backends.
-    \item \textbf{Gemini 3.1 Pro} \cite{google_gemini_2025} \textit{(primary cloud baseline):} Accessed via the Google Generative AI Python SDK. Token counts and latency are retrieved from the API response metadata.
-    \item \textbf{GPT-4o} \cite{openai_gpt4o_2024} \textit{(secondary cloud baseline):} Accessed via the OpenAI Python SDK. Token billing records are used for cost calculation.
-    \item \textbf{OpenClaw} \cite{openclaw_2025} \textit{(Condition B only):} Provides the native three-tier skill architecture. Python intercepts the agent's \texttt{load\_skill} actions to log each disclosure event and measure the token delta introduced by loading each SKILL.md file.
+    \item \textbf{OpenClaw} \cite{openclaw_2025}: The autonomous agent framework used for Condition~B. OpenClaw already implements progressive disclosure natively through its \texttt{SKILL.md} file system. It also generates detailed JSONL log files automatically, which Python scripts will read to extract all measurements.
+    \item \textbf{Ollama} \cite{ollama_2024}: A free, open-source tool that downloads and runs AI models locally on a laptop. It handles all setup automatically and provides a simple web API that both Condition~A and Condition~B can call. Two local models will be tested: \texttt{gemma4:4b} by Google DeepMind \cite{gemma4_2026} and \texttt{qwen3.5:4b} by Alibaba \cite{qwen3_2025}.
+    \item \textbf{Gemini 3.1 Pro} \cite{google_gemini_2025}: The primary cloud-based model, accessed through the Google Generative AI Python SDK. This serves as the upper-bound comparison and shows whether progressive disclosure helps equally on large cloud models.
+    \item \textbf{GPT-4o} \cite{openai_gpt4o_2024}: A secondary cloud model accessed through the OpenAI Python SDK. Included to check whether findings are consistent across different cloud providers.
+    \item \textbf{Python}: Used to dispatch tasks, read the JSONL log files that OpenClaw produces, and compute all metrics. No additional agent framework is needed.
 \end{itemize}
 
-\subsection{Agent Configurations}
+\subsection{The Two Agent Setups}
 
 \subsubsection*{Condition A --- Flat Tool Use (Baseline)}
 
-In Condition~A, the complete library of 20 available skills is converted to a flat JSON schema list and injected into the agent's system prompt at the beginning of every task. Each entry contains the skill name, a one-sentence description, and the input and output parameter types. The agent reasons over this list at every step and selects the appropriate function by name. This configuration mirrors the standard function-calling implementation offered by the OpenAI API \cite{openai_gpt4o_2024} and replicated identically in the Python controller for local model backends.
+In Condition~A, all 20 available skills are converted into a flat JSON schema list and added to the agent's system prompt at the start of every task. Each entry includes the skill name, a one-sentence description, and the expected input and output types. The agent reads through this full list before every reasoning step and picks the tool it thinks it needs. This matches the standard function-calling approach used by most AI frameworks today.
 
 \subsubsection*{Condition B --- Progressive Skill Disclosure (Experimental)}
 
-In Condition~B, the agent is initialised with only a compact metadata index: a numbered list of skill names paired with one-line descriptions, occupying fewer than 500 tokens. When the agent determines that a skill is required, it emits a \texttt{load\_skill(name)} action. The Python controller intercepts this action, reads the corresponding SKILL.md file from disk, and appends its full content---including applicability conditions, execution policy, and termination criteria---to the active message thread. Once the skill's termination criteria are satisfied, the instructional content is removed from the thread before the subsequent reasoning step, restoring the context to the compact metadata state. The executable scripts associated with a skill are invoked directly through Python subprocess calls and are never loaded into the language model's context.
-
-\subsection{Language Model Backends}
-
-Three language model backends are evaluated under both conditions to assess whether the performance gap between paradigms generalises across model capability levels:
-
-\begin{enumerate}
-    \item \textbf{\texttt{gemma4:4b}} (Google DeepMind, 2026) \cite{gemma4_2026}: A 4.5-billion-parameter multimodal model served locally via Ollama. Selected as the primary local baseline owing to its strong document understanding capability and efficient on-device inference.
-    \item \textbf{\texttt{qwen3.5:4b}} (Alibaba, 2025) \cite{qwen3_2025}: A 4-billion-parameter model with demonstrated strength in structured information extraction, also served via Ollama.
-    \item \textbf{Gemini 3.1 Pro} (Google DeepMind) \cite{google_gemini_2025}: The primary cloud-based frontier model, accessed via the Google Generative AI SDK. Serves as the upper-bound performance reference and is expected to exhibit less sensitivity to context saturation given its substantially larger context window.
-    \item \textbf{GPT-4o} (OpenAI) \cite{openai_gpt4o_2024}: The secondary cloud-based baseline, included to assess whether findings are consistent across cloud providers and model families.
-\end{enumerate}
+In Condition~B, the agent uses OpenClaw's \cite{openclaw_2025} native \texttt{SKILL.md} architecture. The system prompt contains only a short index: the names and one-line descriptions of all 20 skills. This takes up far fewer tokens than a full schema list. When the agent decides it needs a specific skill, OpenClaw loads the full \texttt{SKILL.md} file for that skill into the active context. Once the skill's task is finished, OpenClaw removes those instructions before the next reasoning step begins. Python scripts read the JSONL log files that OpenClaw writes to measure exactly when each skill was loaded, how many tokens were added, and how long each step took.
 
 \subsection{Skill Library}
 
-A controlled library of 20 skills is constructed for this study, organised into three functional domains:
+A library of 20 skills will be created for this study, stored as \texttt{SKILL.md} files. They are divided into three groups:
 
 \begin{enumerate}
-    \item \textbf{Document Processing (8 skills):} Extracting named fields from unstructured PDFs and images, summarising document content, converting between document formats, and validating extracted data against a schema.
-    \item \textbf{Web and Data Operations (6 skills):} Performing structured web searches, fetching and parsing remote content, normalising tabular data, and formatting output as structured JSON or CSV.
-    \item \textbf{File Management (6 skills):} Reading from and writing to local files, organising directories, comparing file versions, and generating formatted reports.
+    \item \textbf{Document Processing (8 skills):} Extracting named fields from PDFs, summarising documents, converting file formats, and checking extracted data against a known schema.
+    \item \textbf{Web and Data (6 skills):} Searching the web, fetching and parsing web content, reformatting data, and saving results as JSON or CSV.
+    \item \textbf{File Management (6 skills):} Reading files, writing files, organising folders, and generating formatted reports.
 \end{enumerate}
 
-Each SKILL.md file contains the three mandatory structural components defined by the progressive disclosure architecture: (1) \textit{Applicability Conditions}, specifying the environmental preconditions required before the skill may be invoked; (2) \textit{Execution Policy}, a numbered sequence of procedural steps with explicit error-handling branches; and (3) \textit{Termination Criteria}, defining the conditions that indicate successful completion or grounds for aborting the operation. In Condition~A, the same 20 skills are represented as JSON schema objects loaded into the system prompt. Two library sizes are evaluated---10 skills and 20 skills---to measure how the performance gap between conditions scales with the number of available capabilities.
+Every \texttt{SKILL.md} file contains three sections: (1) \textbf{Applicability Conditions} --- when the skill should be used; (2) \textbf{Execution Policy} --- a numbered list of steps the agent must follow; and (3) \textbf{Termination Criteria} --- when the skill is done or should stop. In Condition~A, the same 20 skills are written as JSON schema blocks instead of \texttt{SKILL.md} files. Two library sizes will be tested --- 10 skills and 20 skills --- to see whether the performance gap between conditions grows as the library gets larger.
 
-\subsection{Task Benchmark}
+\subsection{Tasks}
 
-A benchmark of 40 tasks is constructed across three difficulty levels:
+A set of 40 tasks will be used, divided into three levels of difficulty:
 
 \begin{itemize}
-    \item \textbf{Level 1 --- Single-skill tasks (15 tasks):} Each task requires the identification and execution of exactly one skill. Example: \textit{``Extract the invoice number, vendor name, and total amount due from the attached PDF.''}
-    \item \textbf{Level 2 --- Two-skill sequential tasks (15 tasks):} Each task requires two skills applied in a defined sequence. Example: \textit{``Extract the supplier contact details from this form and write them to a formatted CSV file.''}
-    \item \textbf{Level 3 --- Multi-skill compositional tasks (10 tasks):} Each task requires three or more skills with at least one conditional branch based on intermediate results. Example: \textit{``Search for the most recent pricing data for the three vendors named in this document, validate the figures against the attached budget table, and produce a discrepancy report.''}
+    \item \textbf{Level 1 --- Single-skill tasks (15 tasks):} The agent needs exactly one skill to complete the task. Example: \textit{``Extract the invoice number and total amount from this PDF.''}
+    \item \textbf{Level 2 --- Two-skill tasks (15 tasks):} The agent needs to use two skills in order. Example: \textit{``Extract the supplier email from this form and save it to a CSV file.''}
+    \item \textbf{Level 3 --- Multi-skill tasks (10 tasks):} The agent needs three or more skills, with at least one decision point in the middle. Example: \textit{``Search for the most recent contact details for the company named in this document and write a summary report.''}
 \end{itemize}
 
-All 40 tasks are executed under both conditions and across all four model backends. Each task is repeated three times per condition using a fixed random seed to allow computation of mean and standard deviation values, yielding a total of $40 \times 2 \times 4 \times 3 = 960$ individual agent runs.
+Every task is run under both conditions and with all four model backends. Each task is repeated three times to allow averages and standard deviations to be reported. This gives a total of $40 \times 2 \times 4 \times 3 = 960$ individual agent runs.
 
 \subsection{Measures}
 
-\subsubsection*{Outcome Metrics}
-
 \begin{itemize}
-    \item \textbf{Task Completion Rate:} The proportion of tasks for which the agent produces a correct final output, scored using the ANLS* metric \cite{anlsstar_2024} for text-extraction tasks and binary pass/fail scoring for file and web tasks.
-\end{itemize}
+    \item \textbf{Task Completion Rate:} Was the final answer correct? Text extraction tasks will be scored using the ANLS* metric \cite{anlsstar_2024}, which gives partial credit for nearly-correct answers. File and web tasks will use a simple pass or fail score.
 
-\subsubsection*{Trajectory Metrics}
+    \item \textbf{Hallucinated Skill Calls:} How many times did the agent try to call a skill that does not exist, or call a real skill in a situation that violates its applicability conditions? This is recorded directly from the OpenClaw JSONL logs.
 
-\begin{itemize}
-    \item \textbf{Hallucinated Skill Invocations:} The count of instances in which the agent attempts to invoke a skill name that does not exist in the library, or invokes an existing skill with semantically incorrect parameters that violate its applicability conditions.
-    \item \textbf{Trajectory Compliance Score:} A per-task score measuring the degree to which the agent followed the numbered steps of the relevant execution policy in the correct order, computed by comparing the logged action trace against the ground-truth policy graph for each skill.
-    \item \textbf{Prompt Token Count:} The total number of prompt tokens consumed across all reasoning steps for a given task, obtained from Ollama server logs for local models and from API response metadata for cloud models.
-    \item \textbf{Error Recovery Rate:} The proportion of tasks in which the agent encountered a tool execution failure and autonomously recovered within three subsequent reasoning steps.
-\end{itemize}
+    \item \textbf{Trajectory Compliance Score:} Did the agent follow the numbered steps in the skill's execution policy in the correct order? Each task run is scored by comparing the log of agent actions against the ground-truth policy for the relevant skill.
 
-\subsubsection*{Efficiency Metrics}
+    \item \textbf{Prompt Token Count:} How many tokens were in the agent's input at each reasoning step? For local models, this comes from the Ollama API response. For cloud models, it comes from the API response metadata.
 
-\begin{itemize}
-    \item \textbf{End-to-End Latency:} Wall-clock time from task submission to final output, measured in seconds and averaged across all repetitions within each task level.
-    \item \textbf{Inference Cost:} For cloud models, the monetary cost derived from token billing records (number of tokens multiplied by the provider's published per-million-token rate). For local models, the energy cost is calculated by multiplying the measured average wattage---recorded using \texttt{powermetrics} on macOS or \texttt{powertop} on Linux \cite{tokenpowerbench_2024}---by elapsed time and the local electricity rate, supplemented by a hardware depreciation share calculated using straight-line depreciation over three years.
+    \item \textbf{Latency:} How long did each task take from start to finish, measured in seconds and averaged across all three repetitions.
+
+    \item \textbf{Inference Cost:} For cloud models, cost is taken from the API billing records (tokens used multiplied by the published price per million tokens). For local models, cost is calculated from power consumption measured with \texttt{powermetrics} on Mac or \texttt{powertop} on Linux \cite{tokenpowerbench_2024}, multiplied by the local electricity rate.
 \end{itemize}

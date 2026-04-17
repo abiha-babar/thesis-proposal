@@ -4,19 +4,19 @@
 The final written thesis will be divided into the following chapters:
 
 \begin{enumerate}
-    \item \textbf{Introduction.} Introduces the problem of context saturation in flat tool-use architectures and motivates the shift toward progressive skill disclosure in autonomous agent systems. States the three research questions addressed by the study and outlines the structure of the remaining chapters.
+    \item \textbf{Introduction.} Explains the problem with flat tool lists in AI agents, why progressive disclosure is a proposed solution, and what this study is trying to find out. Gives the reader a clear picture of what the whole thesis is about.
 
-    \item \textbf{Literature Review.} Surveys the foundational research on tool use and agentic skill architectures, trajectory-based agent evaluation, and the empirically documented effects of context window saturation on language model reasoning. Identifies the empirical gap addressed by this thesis: the absence of a controlled, reproducible comparison between flat tool use and progressive skill disclosure.
+    \item \textbf{Literature Review.} Summarises what other researchers have already found about tool use in AI agents, why long tool lists cause problems, and how trajectory quality should be measured. Explains exactly what is still missing from existing research and presents the three questions this thesis will answer.
 
-    \item \textbf{Methodology.} Describes the experimental design and all implementation details, including the two agent conditions (Condition~A: flat tool use; Condition~B: progressive disclosure via OpenClaw), the construction of the 20-skill library across three functional domains, the 40-task benchmark at three difficulty levels, the four language model backends (Gemma~4 and Qwen~3.5 via Ollama; Gemini~3.1~Pro and GPT-4o via cloud APIs), and the full set of outcome, trajectory, and efficiency metrics. Documents the Python orchestration controller and all measurement instrumentation.
+    \item \textbf{Methodology.} Describes exactly how the experiment was set up. Explains the two agent conditions (flat tool list versus progressive disclosure via OpenClaw), how the 20 skill files were built, how the 40 tasks were designed across three difficulty levels, which models were tested (Gemma~4, Qwen~3.5 via Ollama; Gemini~3.1~Pro and GPT-4o via cloud APIs), and how each metric was measured from the OpenClaw JSONL logs.
 
-    \item \textbf{Results.} Presents all collected measurements for both conditions and all model backends, organised by research question. Includes tables and figures reporting task completion rates, hallucinated invocation counts, trajectory compliance scores, prompt token consumption, end-to-end latency, and per-document inference cost. Reports results separately by task difficulty level and skill library size (10 skills and 20 skills).
+    \item \textbf{Results.} Shows all the data collected from the 960 agent runs: how accurate each setup was, how many hallucinated tool calls occurred, how well the agents followed skill instructions, how many tokens were used per task, how fast each run was, and what each run cost. Charts and tables will be included to make the results easy to read.
 
-    \item \textbf{Discussion.} Interprets the experimental results in relation to each of the three research questions. Analyses the conditions under which progressive disclosure provides the most substantial benefit, addresses the limitations of the study (including the use of a controlled synthetic skill library and a single hardware configuration for local model testing), and identifies directions for future research.
+    \item \textbf{Discussion.} Explains what the results mean. Discusses whether the findings answer the three research questions, what the limits of the study are, and what future researchers could look into next.
 
-    \item \textbf{Conclusion.} Summarises the principal empirical findings and their practical implications for developers and organisations designing or deploying autonomous agent systems with large or growing capability sets.
+    \item \textbf{Conclusion.} A short summary of the most important findings and what they mean for anyone building or using autonomous AI agents.
 
-    \item \textbf{References.} A complete bibliographic list of all papers, frameworks, datasets, and technical reports cited in the thesis.
+    \item \textbf{References.} A full list of all research papers and sources used in the thesis.
 
-    \item \textbf{Appendices.} Supporting materials including: the complete SKILL.md template used for all 20 skills; the full task benchmark with answer keys and difficulty classifications; the Python source code for the orchestration controller and metric computation scripts; raw results tables for all conditions, model backends, and repetitions; and the energy measurement configuration for each local model backend.
+    \item \textbf{Appendices.} Supporting material including: the \texttt{SKILL.md} template used for all 20 skills, the full task list with answer keys, the Python scripts used for reading logs and computing metrics, the full raw results tables, and the power measurement setup for local models.
 \end{enumerate}

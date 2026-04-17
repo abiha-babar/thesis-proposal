@@ -1,7 +1,7 @@
 \section{Project Plan}
 \label{sec:plan}
 
-The table below outlines the planned timeline for completing this thesis. Reading, writing, and practical implementation activities proceed in parallel throughout the project to ensure that empirical work informs the written chapters in real time.
+The table below shows the step-by-step plan for completing this thesis. Reading, writing, and practical work happen at the same time throughout the project.
 
 \begin{table}[h!]
     \centering
@@ -9,23 +9,23 @@ The table below outlines the planned timeline for completing this thesis. Readin
         \hline
         \textbf{Time} & \textbf{Reading / Writing} & \textbf{Practical Work} \\
         \hline
-        Weeks 1--3   & Read foundational papers on tool use, agentic skills, and trajectory evaluation (Toolformer, Gorilla, AgentBench, ReAct, WebArena, and the context saturation literature) & Install and configure Ollama; download and verify \texttt{gemma4:4b} and \texttt{qwen3.5:4b}; obtain API access for Gemini~3.1~Pro and GPT-4o; clone and install OpenClaw \\
+        Weeks 1--3   & Read all related papers on tool use, agent evaluation, and context saturation; finish the literature review & Install and test Ollama with \texttt{gemma4:4b} and \texttt{qwen3.5:4b}; set up API access for Gemini 3.1 Pro and GPT-4o; install and verify OpenClaw \\
         \hline
-        Weeks 4--5   & Draft and finalise the literature review chapter & Design the 20-skill library structure; write the SKILL.md template; define applicability conditions, execution policies, and termination criteria for all three skill domains \\
+        Weeks 4--5   & Write up the literature review chapter & Design the 20 skill files; write the \texttt{SKILL.md} template; draft applicability conditions, execution policies, and termination criteria for all three skill domains \\
         \hline
-        Weeks 6--7   & Draft the thesis introduction and finalise the three research questions & Implement all 20 SKILL.md files; build and validate the equivalent Condition~A flat JSON schema representations; verify that both conditions execute correctly end-to-end \\
+        Weeks 6--7   & Write the thesis introduction and the three research questions & Implement all 20 \texttt{SKILL.md} files and their equivalent JSON schema versions for Condition~A; test both setups end-to-end on a few sample tasks \\
         \hline
-        Weeks 8--9   & Draft the methodology chapter & Construct the full 40-task benchmark; prepare ground-truth answer keys and policy graphs for trajectory compliance scoring; implement the Python orchestration controller and all logging infrastructure \\
+        Weeks 8--9   & Write the methodology chapter & Build the full set of 40 tasks across three difficulty levels; prepare answer keys and ground-truth policy graphs for scoring; write the Python scripts that read OpenClaw's JSONL logs and compute metrics \\
         \hline
-        Weeks 10--12 & Document experimental setup and measurement instrumentation & Execute all experiments: 40 tasks $\times$ 2 conditions $\times$ 4 model backends $\times$ 3 repetitions = 960 agent runs; record all token counts, latency measurements, energy readings, and action traces \\
+        Weeks 10--12 & Document the experiment setup and the measurement tools used & Run all 960 agent runs (40 tasks $\times$ 2 conditions $\times$ 4 models $\times$ 3 repeats); save all logs, token counts, latency readings, and energy measurements \\
         \hline
-        Weeks 13--15 & Draft the results chapter & Compute all metrics; generate comparative tables and charts covering task completion rate, hallucination count, trajectory compliance, token cost, latency, and inference cost \\
+        Weeks 13--15 & Write the results chapter & Process all log files; calculate task completion rates, hallucination counts, trajectory compliance scores, token usage, latency, and cost; produce all charts and tables \\
         \hline
-        Weeks 16--17 & Draft the discussion and conclusion chapters & Conduct sensitivity checks (alternative task ordering and prompt phrasing); verify that findings are stable across repetitions \\
+        Weeks 16--17 & Write the discussion and conclusion chapters & Run sensitivity checks to confirm results are stable across different task orderings \\
         \hline
-        Weeks 18--19 & Compile the first complete draft and submit to supervisor for feedback & Finalise all appendices: Python source code, SKILL.md files, task benchmark, raw data tables \\
+        Weeks 18--19 & Send the first complete draft to the supervisor for feedback & Finalise all appendices: skill files, task list, Python scripts, raw data tables \\
         \hline
-        Weeks 20--22 & Revise all chapters in response to supervisor feedback & Prepare and submit the final corrected thesis \\
+        Weeks 20--22 & Make all corrections based on feedback & Submit the final completed thesis \\
         \hline
     \end{tabularx}
     \caption{Planned Project Timeline}
