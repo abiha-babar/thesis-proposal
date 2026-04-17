@@ -29,15 +29,17 @@ In Condition~B, the agent uses OpenClaw's \cite{openclaw_2025} native \texttt{SK
 
 \subsection{Skill Library}
 
-A library of 20 skills will be created for this study, stored as \texttt{SKILL.md} files. They are divided into three groups:
+A library of 20 skills will be created for this study, stored as \texttt{SKILL.md} files. The skills are drawn from three real-life domains that OpenClaw \cite{openclaw_2025} is specifically designed to handle, and that represent tasks a real user would give to a personal autonomous agent on a daily basis. Using real-life domains rather than synthetic tasks makes the results more meaningful and easier for others to relate to.
 
 \begin{enumerate}
-    \item \textbf{Document Processing (8 skills):} Extracting named fields from PDFs, summarising documents, converting file formats, and checking extracted data against a known schema.
-    \item \textbf{Web and Data (6 skills):} Searching the web, fetching and parsing web content, reformatting data, and saving results as JSON or CSV.
-    \item \textbf{File Management (6 skills):} Reading files, writing files, organising folders, and generating formatted reports.
+    \item \textbf{Communication (6 skills):} Drafting an email reply given a thread summary; composing a meeting invitation with specified details; summarising a set of unread messages; writing a short Telegram or WhatsApp message; generating a weekly update for a contact; and formatting a formal written response from bullet-point notes.
+
+    \item \textbf{Research and Information (8 skills):} Searching the web for a specific topic and returning a structured summary; summarising a given article or web page; comparing two products, services, or options side by side; verifying whether a specific factual claim is supported by online sources; monitoring a keyword and reporting new results; generating a structured research briefing from multiple sources; extracting key statistics from a retrieved page; and ranking a list of options based on specified criteria.
+
+    \item \textbf{Task and Planning (6 skills):} Creating a prioritised to-do list from a description of goals; setting a reminder with a natural-language time expression; generating a daily morning briefing from a set of inputs; tracking progress on a multi-step goal and reporting what is done and what remains; writing a short project status summary; and producing a formatted action-item list from meeting notes.
 \end{enumerate}
 
-Every \texttt{SKILL.md} file contains three sections: (1) \textbf{Applicability Conditions} --- when the skill should be used; (2) \textbf{Execution Policy} --- a numbered list of steps the agent must follow; and (3) \textbf{Termination Criteria} --- when the skill is done or should stop. In Condition~A, the same 20 skills are written as JSON schema blocks instead of \texttt{SKILL.md} files. Two library sizes will be tested --- 10 skills and 20 skills --- to see whether the performance gap between conditions grows as the library gets larger.
+Every \texttt{SKILL.md} file contains three sections: (1) \textbf{Applicability Conditions} --- when the skill should be used; (2) \textbf{Execution Policy} --- a numbered list of steps the agent must follow; and (3) \textbf{Termination Criteria} --- when the skill is done or should stop. In Condition~A, the same 20 skills are represented as flat JSON schema blocks loaded into the system prompt all at once. Two library sizes will be tested --- 10 skills and 20 skills --- to see whether the performance gap between the two conditions grows as the skill library gets larger.
 
 \subsection{Tasks}
 
