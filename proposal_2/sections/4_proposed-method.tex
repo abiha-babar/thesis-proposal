@@ -43,12 +43,14 @@ Every \texttt{SKILL.md} file contains three sections: (1) \textbf{Applicability 
 
 \subsection{Tasks}
 
-A set of 40 tasks will be used, divided into three levels of difficulty:
+A set of 40 tasks will be used, divided into three levels of difficulty. All task examples are drawn from the three real-life skill domains defined above.
 
 \begin{itemize}
-    \item \textbf{Level 1 --- Single-skill tasks (15 tasks):} The agent needs exactly one skill to complete the task. Example: \textit{``Extract the invoice number and total amount from this PDF.''}
-    \item \textbf{Level 2 --- Two-skill tasks (15 tasks):} The agent needs to use two skills in order. Example: \textit{``Extract the supplier email from this form and save it to a CSV file.''}
-    \item \textbf{Level 3 --- Multi-skill tasks (10 tasks):} The agent needs three or more skills, with at least one decision point in the middle. Example: \textit{``Search for the most recent contact details for the company named in this document and write a summary report.''}
+    \item \textbf{Level 1 --- Single-skill tasks (15 tasks):} The agent needs exactly one skill to complete the task. Examples: \textit{``Search the web for the latest developments in autonomous AI agents and return a three-point summary.''} Or: \textit{``Draft a formal email reply declining a meeting invitation politely.''} Or: \textit{``Create a prioritised to-do list from the following goals for today.''}
+
+    \item \textbf{Level 2 --- Two-skill tasks (15 tasks):} The agent needs to use two skills in order. Examples: \textit{``Search for the top five project management tools and then draft a short email recommending the best one to my team.''} Or: \textit{``Verify whether the claim in this message is factually accurate online, and then write a reply to the sender with the result.''}
+
+    \item \textbf{Level 3 --- Multi-skill tasks (10 tasks):} The agent needs three or more skills, with at least one decision point in the middle based on what a previous skill returned. Examples: \textit{``Find the three most-discussed AI research papers this week, summarise each one in two sentences, and generate a formatted morning briefing I can share with my team.''} Or: \textit{``Check online whether the scheduled event is still happening, update my to-do list accordingly, and draft a message to the group informing them of any changes.''}
 \end{itemize}
 
 Every task is run under both conditions and with all four model backends. Each task is repeated three times to allow averages and standard deviations to be reported. This gives a total of $40 \times 2 \times 4 \times 3 = 960$ individual agent runs.
