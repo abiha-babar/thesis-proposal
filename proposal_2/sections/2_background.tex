@@ -1,0 +1,24 @@
+\section{Background and General Goals}
+\label{sec:background}
+
+\subsection{Background}
+
+An autonomous AI agent is a software system that uses a large language model as its reasoning core to plan and execute multi-step tasks in a real computing environment. Unlike a simple chatbot, an agent can call external tools, read and write files, browse the web, run code, and interact with external APIs---then observe the results of those actions and decide what to do next \cite{wang2024survey}. This ability to act in the world, rather than merely generate text, is what distinguishes an agent from a conventional language model.
+
+The earliest and most widely used approach to giving agents capabilities is \textit{tool use}. In this paradigm, the developer compiles a flat list of available functions---along with their input and output schemas---and includes the entire list in the agent's system prompt at the start of every task. The language model is then expected to read through all available options and select the correct one at each reasoning step \cite{schick2023toolformer}. While this works for small sets of tools, it degrades rapidly as the number of capabilities grows. Research has found that when more than twenty tools are present simultaneously, frontier language models show measurable drops in selection accuracy---a problem that is even more severe for smaller, locally deployed models \cite{patil2023gorilla, shi2024context}. Larger tool lists also consume more of the context window, leaving less space for task reasoning and prior conversation history, which leads to cascading errors in long-horizon tasks.
+
+In response to these limitations, the open-source autonomous agent community has developed an alternative architecture: \textit{agentic skills}. Rather than defining capabilities as bare API schemas loaded all at once, skills are self-contained knowledge artifacts---stored as structured markdown files on the local file system---that specify not only what the agent can do, but when it should do it, how it should proceed step by step, and when it should stop \cite{wang2024executable}. Frameworks such as OpenClaw \cite{openclaw_2025} implement skills using a \textit{Progressive Disclosure} architecture: the agent is first shown only a directory of skill names and one-line descriptions (the metadata tier), then fetches the full instructional document for the relevant skill when a task requires it (the instructional tier), and finally invokes the executable scripts or external service integrations only at the moment of action (the execution tier). The core claim of this design is that progressive disclosure preserves model reasoning capacity, reduces hallucinated invocations, and enforces procedural compliance---but this claim has never been formally tested in a controlled empirical study.
+
+\subsection{Statement of Objectives}
+
+This thesis will do three things:
+
+\begin{enumerate}
+    \item Empirically compare the \textit{outcome accuracy} and \textit{trajectory quality} of an autonomous agent operating under a traditional flat tool-use paradigm against the same agent operating under a progressive skill disclosure architecture, across a standardized set of document processing and research tasks.
+    \item Measure the \textit{token efficiency} and \textit{operational cost} of both paradigms, quantifying the reduction in prompt tokens and total inference cost achieved by the three-tier loading model compared to full upfront tool exposure.
+    \item Identify the conditions under which progressive disclosure provides the greatest benefit---specifically, whether advantages scale with the number of available capabilities, the complexity of the assigned task, or the reasoning capacity of the underlying language model.
+\end{enumerate}
+
+\subsection{Significance of the Project}
+
+Autonomous agent frameworks are now deployed in enterprise document processing, automated research generation, IT operations management, and personal productivity automation \cite{significant_ai_2025}. The architectural choice between flat tool use and hierarchical skill disclosure has direct consequences for operational cost, reliability, and security. However, practitioners currently make this choice based on intuition and framework marketing rather than empirical evidence. This thesis will provide the first controlled, reproducible measurement of the performance gap between these two paradigms, giving developers and organizations a concrete, evidence-based foundation for architectural decisions. The findings will also contribute to the emerging body of research on agentic evaluation methodology---a field that lacks standardized benchmarks for measuring trajectory quality rather than just final output correctness \cite{liu2023agentbench}.

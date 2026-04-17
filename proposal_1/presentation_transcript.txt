@@ -23,7 +23,28 @@ Date:           April 16, 2026
 
 
 ================================================================
-SLIDE 2 — PROBLEM STATEMENT (Part 1 of 2)
+SLIDE 2 — INTRODUCTION AND BACKGROUND
+================================================================
+  • Businesses and organisations handle large volumes of documents
+    daily — invoices, forms, contracts, and records
+
+  • Extracting structured data from these documents is essential
+    for operations, reporting, and compliance
+
+  • Traditionally, this was done manually or with rule-based tools;
+    AI-powered extraction is now an emerging alternative
+
+  • Two categories of AI models are used for this purpose:
+
+      Cloud-Based LLMs (e.g., GPT-4o, Gemini)
+        — hosted remotely, accessed via paid APIs
+
+      On-Device Small Language Models / SLMs (e.g., Qwen, Gemma,
+        Phi, DeepSeek) — run locally on the organisation's hardware
+
+
+================================================================
+SLIDE 3 — PROBLEM STATEMENT (Part 1 of 2)
 ================================================================
 THE PROBLEM:
   • Organizations process thousands of documents daily
@@ -40,7 +61,7 @@ CURRENT DOMINANT SOLUTION — Cloud-Based AI (OpenAI, Google):
 
 
 ================================================================
-SLIDE 3 — PROBLEM STATEMENT (Part 2 of 2)
+SLIDE 4 — PROBLEM STATEMENT (Part 2 of 2)
 ================================================================
 THE EMERGING ALTERNATIVE — On-Device Small Language Models (SLMs):
   • Run locally on a regular laptop via Ollama (free, open-source)
@@ -59,7 +80,7 @@ RESEARCH GAP:
 
 
 ================================================================
-SLIDE 4 — RELATED WORK: 2024 STUDIES
+SLIDE 5 — RELATED WORK: 2024 STUDIES
 ================================================================
 Key observation: every study below leaves at least one gap —
   (a) no multi-model comparison   (b) no prompt-sensitivity test
@@ -84,7 +105,7 @@ Key observation: every study below leaves at least one gap —
 
 
 ================================================================
-SLIDE 5 — RELATED WORK: 2025–2026 STUDIES
+SLIDE 6 — RELATED WORK: 2025–2026 STUDIES
 ================================================================
 +------+----------------------+-------------------------+------------------------+----------------------------+
 | Year | Study / Source       | Contribution / Findings | Methodology            | Research Gap               |
@@ -108,7 +129,7 @@ SLIDE 5 — RELATED WORK: 2025–2026 STUDIES
 
 
 ================================================================
-SLIDE 6 — SCOPE & RESEARCH QUESTIONS
+SLIDE 7 — SCOPE & RESEARCH QUESTIONS
 ================================================================
 SCOPE:
   • Document type:         Invoices and structured forms (synthetic)
@@ -128,7 +149,7 @@ RESEARCH QUESTIONS:
 
 
 ================================================================
-SLIDE 7 — RESEARCH OBJECTIVES
+SLIDE 8 — RESEARCH OBJECTIVES
 ================================================================
   1. Measure and compare extraction accuracy of local SLMs vs.
      cloud LLMs using the ANLS* metric.
@@ -147,7 +168,7 @@ SLIDE 7 — RESEARCH OBJECTIVES
 
 
 ================================================================
-SLIDE 8 — MODELS BEING TESTED
+SLIDE 9 — MODELS BEING TESTED
 ================================================================
 LOCAL MODELS — via Ollama (Free, Offline)
   +--------------------------+--------+--------+--------+
@@ -172,7 +193,7 @@ CLOUD API MODELS — Pay per Token
 
 
 ================================================================
-SLIDE 9 — TOOLS, DATASET & EVALUATION METRICS
+SLIDE 10 — TOOLS, DATASET & EVALUATION METRICS
 ================================================================
 TOOLS & TECHNOLOGIES:
   • Ollama          — local model runtime (open-source, free)
@@ -195,7 +216,7 @@ EVALUATION METRICS:
 
 
 ================================================================
-SLIDE 10 — RESEARCH METHODOLOGY (Part 1 of 2)
+SLIDE 11 — RESEARCH METHODOLOGY (Part 1 of 2)
 ================================================================
 EXPERIMENTAL DESIGN:
   • Controlled, quantitative comparison study
@@ -219,7 +240,7 @@ PHASE 2 — Data Collection (Weeks 7–13):
 
 
 ================================================================
-SLIDE 11 — RESEARCH METHODOLOGY (Part 2 of 2)
+SLIDE 12 — RESEARCH METHODOLOGY (Part 2 of 2)
 ================================================================
 PHASE 3 — Analysis (Weeks 14–18):
   • Compute ANLS* and BERTScore per model per prompt variant
@@ -240,7 +261,7 @@ SAMPLE SIZE JUSTIFICATION:
 
 
 ================================================================
-SLIDE 12 — MAJOR DELIVERABLES & EXPECTED OUTCOMES
+SLIDE 13 — MAJOR DELIVERABLES & EXPECTED OUTCOMES
 ================================================================
 DELIVERABLES:
   1. Synthetic dataset (500 docs + answer key) — open for reuse
@@ -261,7 +282,7 @@ EXPECTED OUTCOMES:
 
 
 ================================================================
-SLIDE 13 — IMPLICATIONS & SIGNIFICANCE
+SLIDE 14 — IMPLICATIONS & SIGNIFICANCE
 ================================================================
 PRACTICAL IMPLICATIONS:
   • Cost Savings: Local AI saves significantly at high document
@@ -281,7 +302,7 @@ ACADEMIC SIGNIFICANCE:
 
 
 ================================================================
-SLIDE 14 — SUMMARY
+SLIDE 15 — SUMMARY
 ================================================================
 THESIS IN ONE SENTENCE:
   The first head-to-head, multi-model, cost-transparent

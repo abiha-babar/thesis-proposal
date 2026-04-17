@@ -1,0 +1,44 @@
+\section{Project Plan}
+\label{sec:plan}
+
+The table below outlines the step-by-step timeline for completing this thesis. Reading, writing, and practical implementation work run in parallel throughout the project.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabularx}{\textwidth}{ | c | X | X | }
+        \hline
+        \textbf{Time} & \textbf{Reading / Writing} & \textbf{Practical Work} \\
+        \hline
+        Weeks 1--3   & Read foundational papers on tool use, agentic skill architectures, and trajectory evaluation (Toolformer, Gorilla, AgentBench, ReAct, WebArena) & Survey open-source autonomous agent frameworks; install and configure OpenClaw, LangGraph, and Ollama on the test machine \\
+        \hline
+        Weeks 4--5   & Write and finalize the literature review chapter & Design the 30-skill library structure; define applicability conditions, execution policies, and termination criteria templates for all five skill domains \\
+        \hline
+        Weeks 6--7   & Write the thesis introduction and research question formulation & Implement all 30 SKILL.md files; build and validate the Condition~A flat-tool-list schema equivalents \\
+        \hline
+        Weeks 8--9   & Write the methodology chapter & Build and test the 60-task benchmark; prepare ground-truth answer keys and policy graphs for trajectory scoring; verify task execution end-to-end for both conditions \\
+        \hline
+        Weeks 10--12 & Document the experimental setup and instrumentation & Run all experiments: both conditions $\times$ three library sizes $\times$ three model backends $\times$ three repetitions; log all token counts, latency, energy, and action traces \\
+        \hline
+        Weeks 13--15 & Write the results chapter & Compute all metrics (task completion rate, hallucination count, trajectory compliance, token cost, latency, inference cost); generate charts and comparative tables \\
+        \hline
+        Weeks 16--17 & Write the discussion and conclusion chapters & Conduct sensitivity checks: verify that results hold under alternative task ordering and prompt wording variations \\
+        \hline
+        Weeks 18--19 & Complete first full draft and send to supervisor for feedback & Finalize appendices (code, raw data tables, skill files, task benchmark) \\
+        \hline
+        Weeks 20--22 & Revise all chapters based on supervisor feedback & Prepare and submit the final corrected thesis \\
+        \hline
+    \end{tabularx}
+    \caption{Planned Project Timeline}
+    \label{tab:timeline}
+\end{table}
+
+\newpage
+% Signatures
+% \vspace{4cm}
+% \noindent Signed by:
+
+% \vspace{1cm}
+% \noindent Supervisor: \makebox[3in]{\hrulefill} \quad Date: \makebox[1.5in]{\hrulefill}
+
+% \vspace{1cm}
+% \noindent Student: \quad\quad \makebox[3in]{\hrulefill} \quad Date: \makebox[1.5in]{\hrulefill}

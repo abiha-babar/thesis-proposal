@@ -1,0 +1,68 @@
+\section{Proposed Method}
+\label{sec:method}
+
+\subsection{Experimental Design Overview}
+
+This study uses a controlled within-subject design: every task is attempted by both the baseline agent (Condition~A: flat tool use) and the experimental agent (Condition~B: progressive skill disclosure). The two conditions share identical underlying language models, system prompts, task inputs, and skill libraries; the only variable changed between conditions is the mechanism by which capabilities are exposed to the model. This design ensures that any observed differences in outcome accuracy, trajectory quality, or token efficiency can be attributed specifically to the architectural change rather than to differences in model capability or task difficulty.
+
+\subsection{Agent Architectures}
+
+\subsubsection*{Condition A --- Flat Tool Use (Baseline)}
+
+In Condition~A, the agent receives the full library of available capabilities loaded into the system prompt at the start of every task. Each capability is represented as a JSON schema block containing the function name, a one-sentence description, and its input and output parameter types. This mirrors the standard tool-use implementation in LangGraph \cite{langgraph_2024} and the OpenAI function-calling API \cite{openai_gpt4o_2024}. The agent reasons over this full list at every step and selects the appropriate function by name.
+
+\subsubsection*{Condition B --- Progressive Skill Disclosure (Experimental)}
+
+In Condition~B, the agent operates with the full skill library stored on-disk as a collection of structured SKILL.md files, following the OpenClaw \cite{openclaw_2025} architecture. The agent's initial system prompt contains only a metadata index: a flat list of skill names paired with one-line descriptions. This index is small enough to leave the majority of the context window available for task reasoning. When the agent determines that a skill is needed, it invokes a \texttt{load\_skill} action to retrieve the full instructional document for that skill---including its applicability conditions, step-by-step execution policy, and termination criteria---into its active context. The underlying scripts or external API integrations are loaded only at the moment of execution. After the skill's task is complete, the instructional content is removed from the active context before the next reasoning step.
+
+\subsection{Skill Library}
+
+A controlled library of 30 skills will be created for this study, organized into five functional domains: \textit{document processing} (extract structured fields from PDFs and images), \textit{data formatting} (convert, clean, and validate structured data), \textit{web research} (search, retrieve, and summarize web content), \textit{file management} (read, write, and organize local files), and \textit{code analysis} (inspect, debug, and annotate source code). Each skill is defined by three components:
+
+\begin{enumerate}
+    \item \textbf{Applicability Conditions:} A list of explicit preconditions that must be satisfied before the skill is invoked (for example: ``the input is a PDF file'' or ``the target API is reachable'').
+    \item \textbf{Execution Policy:} A numbered sequence of procedural steps the agent must follow, including explicit error-handling branches for common failure modes.
+    \item \textbf{Termination Criteria:} A defined set of conditions that indicate either successful task completion or grounds for aborting and returning an error.
+\end{enumerate}
+
+In Condition~A, all 30 skill schemas are loaded into the system prompt simultaneously. In Condition~B, the same 30 skills are represented as separate SKILL.md files and loaded on demand. Three library sizes will be tested---10, 20, and 30 skills---to measure how the performance gap between the two conditions scales with library size.
+
+\subsection{Task Benchmark}
+
+A benchmark of 60 tasks will be constructed across three difficulty levels:
+
+\begin{itemize}
+    \item \textbf{Level 1 --- Single-skill tasks (20 tasks):} Each task requires the agent to identify and execute exactly one skill. Example: \textit{``Extract the invoice number and total due from this PDF.''}
+    \item \textbf{Level 2 --- Two-skill tasks (20 tasks):} Each task requires the agent to compose two skills in sequence. Example: \textit{``Extract the supplier name from this scanned form and then look up their website using a web search.''}
+    \item \textbf{Level 3 --- Multi-skill tasks (20 tasks):} Each task requires three or more skills in a non-linear sequence with at least one conditional branch. Example: \textit{``Read this report, extract all numerical figures, validate that they sum correctly, and write a formatted summary to a new file.''}
+\end{itemize}
+
+All tasks will be run against both agent conditions using three language model backends to assess whether results generalize across model capability levels: \textbf{Gemma~3:4b} (Google DeepMind) \cite{gemma4_2026} run locally via Ollama \cite{ollama_2024}, \textbf{Qwen~2.5:7b} (Alibaba) \cite{qwen3_2025} run locally via Ollama, and \textbf{GPT-4o} (OpenAI) \cite{openai_gpt4o_2024} accessed via the cloud API.
+
+\subsection{Measures}
+
+\subsubsection*{Outcome Metrics}
+
+\begin{itemize}
+    \item \textbf{Task Completion Rate:} The percentage of tasks for which the agent produces a correct final output, scored using the ANLS* metric \cite{anlsstar_2024} for text extraction tasks and binary pass/fail scoring for file and code tasks.
+\end{itemize}
+
+\subsubsection*{Trajectory Metrics}
+
+\begin{itemize}
+    \item \textbf{Hallucinated Skill Invocations:} The number of times the agent attempts to call a skill that does not exist in the library, or invokes an existing skill with semantically incorrect parameters.
+    \item \textbf{Trajectory Compliance Score:} A per-task score measuring the degree to which the agent followed the defined execution policy steps in the correct sequence, computed by comparing the recorded action trace against the ground-truth policy graph for each skill.
+    \item \textbf{Prompt Token Count:} The total number of prompt tokens consumed across all reasoning steps for a given task, measured from the API or Ollama server logs.
+    \item \textbf{Error Recovery Rate:} The proportion of tasks in which the agent encountered a tool failure and successfully recovered within three additional reasoning steps.
+\end{itemize}
+
+\subsubsection*{Efficiency Metrics}
+
+\begin{itemize}
+    \item \textbf{End-to-End Latency:} Total wall-clock time from task submission to final output, measured in seconds and averaged across all tasks within each level.
+    \item \textbf{Inference Cost:} For cloud models, the monetary cost derived from token billing logs. For local models, the energy cost calculated by multiplying measured wattage (via \texttt{powermetrics} on macOS or \texttt{powertop} on Linux \cite{tokenpowerbench_2024}) by elapsed time and local electricity rate.
+\end{itemize}
+
+\subsection{Implementation Details}
+
+All experiments will be orchestrated using a Python controller that manages task dispatch, logs every reasoning step and tool invocation, and records all measurement values to structured JSON files. For Condition~B, the controller implements the three-tier disclosure protocol: it intercepts the agent's \texttt{load\_skill} action, fetches the corresponding SKILL.md file from disk, appends its content to the active message thread, and removes it after the skill's termination criteria have been met. All local models will be served via Ollama \cite{ollama_2024} on the same hardware across all experiments, ensuring that latency and energy measurements are directly comparable. A fixed random seed will be used to shuffle task order, and all tasks will be repeated three times per condition to allow reporting of mean values and standard deviations.
