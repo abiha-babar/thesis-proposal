@@ -3,100 +3,104 @@
 
 \subsection{Existing Research}
 
-Prior research relevant to this thesis spans four distinct but interconnected areas: the evolution of tool use in language model agents, the architecture of agentic skill systems, evaluation methodologies for autonomous agents, and the practical deployment of autonomous frameworks.
+The literature relevant to this thesis spans four interconnected areas: the foundational work on tool use in language model agents, the emerging architecture of agentic skill systems, established methodologies for trajectory-based evaluation, and the empirically documented effects of context window saturation on language model reasoning.
 
 \subsubsection*{Tool Use in Language Model Agents}
 
-The foundational work on equipping language models with the ability to call external tools was carried out by Schick et al.\ \cite{schick2023toolformer}, who introduced Toolformer---a method for training models to decide when and how to invoke APIs by generating API calls inline within their output. Patil et al.\ \cite{patil2023gorilla} subsequently demonstrated that tool accuracy degrades significantly when the number of available APIs grows large, introducing the Gorilla benchmark to measure this effect. Taken together, these studies establish the core problem that the skills paradigm attempts to solve: flat tool lists harm agent performance as the capability set expands.
+The seminal contribution of Schick et al.\ \cite{schick2023toolformer} demonstrated that language models can learn to invoke external APIs autonomously by generating API call syntax inline within their output. This work established the foundational paradigm of flat tool use, in which all available function definitions are present in the model's context at the time of inference. Patil et al.\ \cite{patil2023gorilla} subsequently evaluated this paradigm at scale, constructing a benchmark of over 1,600 APIs and demonstrating that tool selection accuracy decreases substantially as the number of simultaneously available tools increases. These findings establish the core limitation that the progressive disclosure paradigm is designed to address.
 
-Qin et al.\ \cite{qin2023toolllm} extended this line of research with ToolBench, a large-scale benchmark of over 16,000 real-world APIs, showing that state-of-the-art models fail on multi-step tool composition tasks even when individual tool selection is reliable. This finding underscores the importance of procedural structure in guiding agent behavior---the exact function served by the execution policy component of an agentic skill.
+Qin et al.\ \cite{qin2023toolllm} extended this line of investigation with ToolBench, a large-scale assessment covering more than 16,000 real-world APIs. Their study found that even state-of-the-art models fail on multi-step tool composition tasks at a rate that escalates with API set complexity, underscoring the need for structured procedural guidance---precisely the function served by the execution policy component of an agentic skill.
 
 \subsubsection*{Agentic Skill Architectures}
 
-Wang et al.\ \cite{wang2024executable} introduced the concept of executable policies for embodied agents, in which behavioral constraints and procedural instructions are stored externally and loaded on demand. This work is the closest academic precursor to the SKILL.md architecture used in open-source autonomous frameworks: it demonstrates that externalized procedural knowledge improves task completion rates over pure in-context reasoning.
+Wang et al.\ \cite{wang2024executable} introduced executable policies for embodied agents, demonstrating that storing behavioural constraints and procedural instructions in external artefacts that are loaded on demand improves task completion rates over pure in-context reasoning. This work is the closest academic precursor to the \texttt{SKILL.md} architecture implemented in OpenClaw \cite{openclaw_2025}, which represents the primary production realisation of progressive disclosure in a sovereign autonomous agent system. OpenClaw's three-tier capability hierarchy---metadata index, instructional document, and execution scripts---implements the theoretical design of Wang et al.\ in a fully operational, open-source framework that is concurrently used by more than 313,000 developers as of early 2026.
 
-The OpenClaw framework \cite{openclaw_2025} represents the primary production implementation of progressive disclosure in the agent-skills paradigm. Its architecture organizes capabilities into a three-tier hierarchy---metadata, instructional, and execution tiers---and exposes them to the underlying language model incrementally based on task relevance. The heartbeat scheduling mechanism and persistent SQLite memory used by OpenClaw distinguish it from stateless frameworks such as LangGraph \cite{langgraph_2024} and CrewAI \cite{crewai_2024}, which do not maintain persistent state between invocation cycles.
+Yao et al.\ \cite{yao2022react} introduced the ReAct framework, which interleaves explicit reasoning steps with action calls to produce interpretable execution traces. ReAct's trace format provides the methodological basis for trajectory-level evaluation in the current study and establishes the standard against which agent compliance with procedural policies is measured.
 
 \subsubsection*{Agent Evaluation Methodologies}
 
-Liu et al.\ \cite{liu2023agentbench} introduced AgentBench, the first standardized benchmark for evaluating language model agents across diverse interactive environments. Their work establishes the methodological distinction between outcome metrics---which assess only whether the final state is correct---and trajectory metrics, which evaluate the entire reasoning and tool-invocation sequence. This distinction is central to the current study, as the primary claim of progressive disclosure is not merely that it produces better outcomes, but that it produces more efficient and compliant execution paths.
+Liu et al.\ \cite{liu2023agentbench} introduced AgentBench, the first standardised benchmark for evaluating language model agents across interactive environments. Their work establishes the critical methodological distinction between \textit{outcome metrics}, which assess only the correctness of the final state, and \textit{trajectory metrics}, which evaluate the full reasoning and tool-invocation sequence. This distinction is central to the present study, since the primary claim of progressive disclosure concerns not only whether the agent produces a correct final output, but whether it follows a compliant, efficient, and hallucination-free execution path.
 
-Yao et al.\ \cite{yao2022react} introduced the ReAct framework, which interleaves reasoning steps with action calls to produce traceable, interpretable agent trajectories. ReAct's trace format provides the methodological foundation for trajectory-level evaluation used in this thesis.
+Zhou et al.\ \cite{zhou2023webarena} created WebArena, a realistic web-navigation benchmark requiring long-horizon planning and environmental interaction. Their finding that frontier models succeed on fewer than 15\% of tasks when evaluated on full trajectories---rather than final outputs alone---highlights the severity of the gap between outcome-only and trajectory-aware assessment and motivates the dual-metric evaluation design employed in this thesis.
 
-Zhou et al.\ \cite{zhou2023webarena} created WebArena, a realistic benchmark of long-horizon web navigation tasks, finding that even frontier models succeed on fewer than 15\% of tasks when evaluated on full trajectories rather than final outcomes. This result highlights the severity of the evaluation gap between outcome-only and trajectory-aware assessment---and motivates the dual-metric evaluation design used in this study.
+\subsubsection*{Context Window Saturation}
 
-\subsubsection*{Context Window Saturation and Retrieval}
-
-Shi et al.\ \cite{shi2024context} empirically demonstrated that irrelevant information in the context window consistently degrades large language model reasoning performance. This finding provides a theoretical mechanism for why progressive disclosure should improve agent accuracy: by loading only the relevant skill into context rather than all available tools, the agent's reasoning operates on a cleaner, less noisy prompt. Loss et al.\ \cite{liu2024lost} further showed that language models disproportionately attend to information at the beginning and end of long contexts, suppressing the processing of information in the middle---a phenomenon they term the ``lost in the middle'' effect---which implies that large flat tool lists are particularly harmful when the relevant tool definition appears near the center of the prompt.
+Shi et al.\ \cite{shi2024context} demonstrated empirically that the presence of irrelevant information in a language model's context window degrades reasoning accuracy, even in state-of-the-art models. This finding provides the theoretical mechanism through which progressive disclosure is expected to improve agent performance: by loading only the relevant skill into context rather than all available tool definitions, the active prompt is narrower and more semantically focused. Liu et al.\ \cite{liu2024lost} further identified an attention distribution phenomenon they term the ``lost in the middle'' effect, in which language models systematically underweight information positioned in the middle of long contexts. This effect implies that when many tool definitions are present simultaneously, those appearing neither at the beginning nor at the end of the tool list are processed less reliably---a problem that the metadata-first approach of progressive disclosure directly mitigates.
 
 \subsection{Summary of Key Related Work (2022--2025)}
 
-Table~\ref{tab:related-work} summarizes the most directly relevant prior studies, identifying the empirical gap that the current research addresses.
+Table~\ref{tab:related-work} presents a structured summary of the most directly relevant prior studies, identifying for each the primary finding, the method used, and the empirical gap that the current research addresses.
 
 \begin{table}[h!]
 \centering
 \small
 \caption{Summary of Related Work (2022--2025)}
 \label{tab:related-work}
-\begin{tabular}{|p{0.65cm}|p{2.4cm}|p{3.6cm}|p{3.1cm}|p{3.8cm}|}
+\begin{tabular}{|p{0.65cm}|p{2.3cm}|p{3.5cm}|p{3.0cm}|p{3.9cm}|}
 \hline
-\textbf{Year} & \textbf{Study} & \textbf{Key Finding} & \textbf{Methodology} & \textbf{Gap Left} \\
+\textbf{Year} & \textbf{Study} & \textbf{Key Finding} & \textbf{Methodology} & \textbf{Gap Remaining} \\
+\hline
+2022 &
+Yao et al.\ \cite{yao2022react} (ReAct) &
+Interleaving reasoning and acting improves task performance and produces interpretable traces &
+Chain-of-thought prompting combined with tool-call execution &
+No comparison of flat vs.\ hierarchical capability loading \\
 \hline
 2023 &
 Schick et al.\ \cite{schick2023toolformer} (Toolformer) &
-LLMs can learn to call tools autonomously through self-supervised training &
+Models can learn autonomous API invocation through self-supervised training &
 Fine-tuning on self-generated API call demonstrations &
-Only evaluates single-tool calls; no multi-skill composition or progressive loading \\
+Evaluates single-tool calls only; no structured skill policies; no progressive loading \\
 \hline
 2023 &
-Patil et al.\ \cite{patil2023gorilla} (Gorilla) &
-Tool selection accuracy drops sharply when the available API set is large &
-Retrieval-augmented API calling benchmark with 1,600+ APIs &
+Patil et al.\ \cite{patil2023gorilla} &
+Tool selection accuracy degrades as the available API set grows &
+Retrieval-augmented benchmark with 1,600+ APIs &
 No procedural constraints; no trajectory evaluation; no skill hierarchy tested \\
 \hline
 2023 &
 Liu et al.\ \cite{liu2023agentbench} (AgentBench) &
-Current LLMs score poorly on trajectory-based agent tasks; evaluation must go beyond outcomes &
-8 interactive environments; scoring on both outcome and trajectory correctness &
-Does not compare flat tool use vs.\ hierarchical skill disclosure architectures \\
+LLMs score poorly on trajectory-level tasks; evaluation must extend beyond outcome correctness &
+Eight interactive environments with dual outcome and trajectory scoring &
+Does not compare flat tool use against hierarchical skill disclosure \\
 \hline
 2023 &
-Yao et al.\ \cite{yao2022react} (ReAct) &
-Interleaved reasoning and acting improves task completion and produces interpretable traces &
-Prompted chain-of-thought combined with tool call execution &
-Architecture-agnostic; no measurement of skill loading overhead or context saturation \\
+Zhou et al.\ \cite{zhou2023webarena} (WebArena) &
+Frontier models succeed on fewer than 15\% of long-horizon tasks under trajectory assessment &
+Realistic browser environment with functional end-to-end task evaluation &
+Single architectural paradigm; no skill-loading mechanism compared \\
 \hline
 2024 &
 Shi et al.\ \cite{shi2024context} &
-Irrelevant context degrades LLM reasoning; even state-of-the-art models are not robust to distraction &
-Controlled injection of distractors into math, QA, and coding prompts &
-No agent study; does not measure the specific impact of large tool lists vs.\ progressive disclosure \\
+Irrelevant context degrades LLM reasoning even in state-of-the-art models &
+Controlled distractor injection across reasoning, QA, and coding tasks &
+No agent study; does not measure the specific effect of large tool lists \\
 \hline
 2024 &
-Zhou et al.\ \cite{zhou2023webarena} (WebArena) &
-Frontier models succeed on fewer than 15\% of long-horizon web tasks when trajectory correctness is required &
-Realistic browser environment with functional, end-to-end task assessment &
-No comparison of architectural paradigms; single tool-use pattern only \\
+Liu et al.\ \cite{liu2024lost} &
+Models underweight information positioned in the middle of long contexts &
+Controlled context length experiments with position-varied evidence &
+No agent tool-use experiment; no progressive loading comparison \\
 \hline
 2025 &
 OpenClaw \cite{openclaw_2025} &
-Three-tier skill architecture enables persistent autonomous operation; claims improved efficiency over flat tool lists &
+Three-tier skill architecture enables persistent autonomous operation with claimed efficiency gains &
 Open-source daemon framework with heartbeat scheduler and SQLite memory &
-No formal empirical validation; no controlled comparison against baseline tool-use paradigm \\
+No formal empirical validation; no controlled comparison against flat tool-use baseline \\
 \hline
 \end{tabular}
 \end{table}
 
 \subsection{Research Gap}
 
-The existing literature establishes two important facts. First, flat tool lists harm agent performance as the tool set grows, because irrelevant context degrades LLM reasoning and because flat lists provide no procedural guidance during execution \cite{patil2023gorilla, shi2024context}. Second, trajectory-level evaluation is necessary to make meaningful claims about agent reliability, since outcome-only metrics mask inefficient, non-compliant, or unsafe execution paths \cite{liu2023agentbench, zhou2023webarena}. However, no existing study has directly compared a flat tool-use architecture against a progressive skill disclosure architecture on matched tasks, using trajectory-level metrics to assess whether the structural change produces meaningful improvements in efficiency, compliance, and hallucination rate. This thesis fills that gap.
+The body of literature reviewed above establishes two well-evidenced findings: first, flat tool lists degrade agent performance as the capability set grows, because irrelevant context saturates the available reasoning space \cite{patil2023gorilla, shi2024context}; and second, trajectory-level evaluation is necessary to make meaningful claims about agent reliability, as outcome-only metrics conceal inefficient, non-compliant, and hallucination-prone execution paths \cite{liu2023agentbench, zhou2023webarena}. Despite these findings, no published study has directly compared a flat tool-use architecture against a progressive skill disclosure architecture on matched tasks, using trajectory-level metrics to assess whether the structural change produces measurable improvements in efficiency, compliance, and hallucination frequency. The claims made by the developers of OpenClaw \cite{openclaw_2025} and related frameworks regarding the superiority of hierarchical skill loading remain empirically unvalidated. This thesis fills that gap.
 
 \subsection{Research Questions}
 
-Based on the literature above, this thesis will answer three specific questions:
+Based on the literature reviewed above, this thesis will answer three specific research questions:
 
 \begin{itemize}
-    \item \textbf{Question 1:} Does an agent operating under a progressive skill disclosure architecture produce significantly fewer hallucinated tool calls and higher trajectory compliance scores than the same agent operating under a flat tool-use architecture, across tasks of varying complexity?
-    \item \textbf{Question 2:} How much does progressive disclosure reduce prompt token consumption and total inference cost compared to flat tool exposure, and how does this reduction scale with the size of the skill library?
-    \item \textbf{Question 3:} Under what conditions---defined by skill library size, task length, and model capability---does progressive disclosure provide the greatest improvement in outcome accuracy and trajectory quality?
+    \item \textbf{RQ1:} Does an autonomous agent operating under progressive skill disclosure produce significantly fewer hallucinated tool invocations and higher trajectory compliance scores than the same agent operating under flat tool use, across tasks of varying compositional complexity?
+    \item \textbf{RQ2:} How much does progressive disclosure reduce prompt token consumption and total inference cost compared to flat tool exposure, and how does this reduction scale with the size of the skill library?
+    \item \textbf{RQ3:} Under what conditions---defined by skill library size and task complexity---does progressive disclosure provide the greatest improvement in both outcome accuracy and trajectory quality, across local small language models and cloud-based frontier systems?
 \end{itemize}
