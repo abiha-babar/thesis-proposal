@@ -1,72 +1,76 @@
 \section{Proposed Method}
 \label{sec:method}
 
-\subsection{Overview of the Experiment}
+\subsection{What This Study Does}
 
-This study will run the same set of tasks under two different setups and compare the results. In the first setup (Condition~A), the agent is given all available tools at once as a flat list in its instructions --- the standard way most agents work today. In the second setup (Condition~B), the agent uses the OpenClaw \cite{openclaw_2025} skill system, where it only sees tool names first and loads full instructions for a tool when it needs them. Everything else stays the same across both setups: the same tasks, the same models, and the same scoring method. This way, any difference in the results can only be explained by the change in how tools are loaded.
+This study sets up OpenClaw \cite{openclaw_2025} and runs the same set of tasks twice: once with all skills loaded into the agent at the start, and once with skills loaded one at a time as they are needed. Everything else stays the same both times --- the same tasks, the same AI models, and the same way of checking the results. The only thing that changes is how the skills are given to the agent.
 
-\subsection{Tools and Software Used}
+By keeping everything else identical, any difference in results can only be explained by the one thing that changed: the way skills were loaded.
 
-No heavy frameworks are needed for this study. The full setup uses four things:
+\subsection{The Tools and Software Used}
+
+The study uses four things:
 
 \begin{itemize}
-    \item \textbf{OpenClaw} \cite{openclaw_2025}: The autonomous agent framework used for Condition~B. OpenClaw already implements progressive disclosure natively through its \texttt{SKILL.md} file system. It also generates detailed JSONL log files automatically, which Python scripts will read to extract all measurements.
-    \item \textbf{Ollama} \cite{ollama_2024}: A free, open-source tool that downloads and runs AI models locally on a laptop. It handles all setup automatically and provides a simple web API that both Condition~A and Condition~B can call. Two local models will be tested: \texttt{gemma4:4b} by Google DeepMind \cite{gemma4_2026} and \texttt{qwen3.5:4b} by Alibaba \cite{qwen3_2025}.
-    \item \textbf{Gemini 3.1 Pro} \cite{google_gemini_2025}: The primary cloud-based model, accessed through the Google Generative AI Python SDK. This serves as the upper-bound comparison and shows whether progressive disclosure helps equally on large cloud models.
-    \item \textbf{GPT-4o} \cite{openai_gpt4o_2024}: A secondary cloud model accessed through the OpenAI Python SDK. Included to check whether findings are consistent across different cloud providers.
-    \item \textbf{Python}: Used to dispatch tasks, read the JSONL log files that OpenClaw produces, and compute all metrics. No additional agent framework is needed.
+    \item \textbf{OpenClaw} \cite{openclaw_2025}: The agent framework used to run all tasks. OpenClaw handles the agent loop, loads skill files, and writes a detailed log of everything the agent does. Those logs are what the measurements come from.
+    \item \textbf{Ollama} \cite{ollama_2024}: A free tool that runs AI models locally on a laptop. It handles setup automatically. Two local models will be used: \texttt{gemma4:4b} by Google DeepMind \cite{gemma4_2026} and \texttt{qwen3.5:4b} by Alibaba \cite{qwen3_2025}.
+    \item \textbf{Gemini 3.1 Pro} \cite{google_gemini_2025}: A cloud-based AI model by Google, used as the main cloud reference. It shows whether the findings hold for large, powerful models too.
+    \item \textbf{GPT-4o} \cite{openai_gpt4o_2024}: A second cloud model by OpenAI, used to check whether the findings are the same across different cloud providers.
+    \item \textbf{Python}: Used to read the log files that OpenClaw writes and calculate all the numbers. No extra frameworks are needed.
 \end{itemize}
 
-\subsection{The Two Agent Setups}
+\subsection{The Two Setups}
 
-\subsubsection*{Condition A --- Flat Tool Use (Baseline)}
+\subsubsection*{Setup A --- All Skills Loaded at Once (the standard way)}
 
-In Condition~A, all 20 available skills are converted into a flat JSON schema list and added to the agent's system prompt at the start of every task. Each entry includes the skill name, a one-sentence description, and the expected input and output types. The agent reads through this full list before every reasoning step and picks the tool it thinks it needs. This matches the standard function-calling approach used by most AI frameworks today.
+In Setup A, all 20 skills are written out as a flat list and added to the agent's instructions at the very beginning of every task. The agent reads through the whole list before each step and picks the skill it thinks it needs. This is how most AI agents work today.
 
-\subsubsection*{Condition B --- Progressive Skill Disclosure (Experimental)}
+\subsubsection*{Setup B --- Skills Loaded One at a Time (using OpenClaw)}
 
-In Condition~B, the agent uses OpenClaw's \cite{openclaw_2025} native \texttt{SKILL.md} architecture. The system prompt contains only a short index: the names and one-line descriptions of all 20 skills. This takes up far fewer tokens than a full schema list. When the agent decides it needs a specific skill, OpenClaw loads the full \texttt{SKILL.md} file for that skill into the active context. Once the skill's task is finished, OpenClaw removes those instructions before the next reasoning step begins. Python scripts read the JSONL log files that OpenClaw writes to measure exactly when each skill was loaded, how many tokens were added, and how long each step took.
+In Setup B, the agent starts with only a short list of skill names and one-line descriptions --- nothing more. When the agent decides it needs a specific skill, OpenClaw loads the full instructions for that skill. Once that skill is finished, those instructions are removed before the next step begins. The agent never has more than one skill's full instructions in its memory at a time.
 
-\subsection{Skill Library}
+\subsection{The Skill Files}
 
-A library of 20 skills will be created for this study, stored as \texttt{SKILL.md} files. The skills are drawn from three real-life domains that OpenClaw \cite{openclaw_2025} is specifically designed to handle, and that represent tasks a real user would give to a personal autonomous agent on a daily basis. Using real-life domains rather than synthetic tasks makes the results more meaningful and easier for others to relate to.
+Twenty skill files will be written for this study, each stored as a \texttt{SKILL.md} file. They cover three areas of everyday tasks that OpenClaw is designed for:
 
 \begin{enumerate}
-    \item \textbf{Communication (6 skills):} Drafting an email reply given a thread summary; composing a meeting invitation with specified details; summarising a set of unread messages; writing a short Telegram or WhatsApp message; generating a weekly update for a contact; and formatting a formal written response from bullet-point notes.
+    \item \textbf{Communication (6 skills):} Drafting an email reply; composing a meeting invitation; summarising unread messages; writing a short chat message; generating a weekly update; and formatting a written response from notes.
 
-    \item \textbf{Research and Information (8 skills):} Searching the web for a specific topic and returning a structured summary; summarising a given article or web page; comparing two products, services, or options side by side; verifying whether a specific factual claim is supported by online sources; monitoring a keyword and reporting new results; generating a structured research briefing from multiple sources; extracting key statistics from a retrieved page; and ranking a list of options based on specified criteria.
+    \item \textbf{Research and Information (8 skills):} Searching the web for a topic; summarising an article; looking at two options side by side; checking whether a claim is true online; monitoring a keyword for new results; generating a research briefing from multiple sources; extracting key numbers from a page; and ranking a list of options.
 
-    \item \textbf{Task and Planning (6 skills):} Creating a prioritised to-do list from a description of goals; setting a reminder with a natural-language time expression; generating a daily morning briefing from a set of inputs; tracking progress on a multi-step goal and reporting what is done and what remains; writing a short project status summary; and producing a formatted action-item list from meeting notes.
+    \item \textbf{Task and Planning (6 skills):} Creating a to-do list from a description of goals; setting a reminder; generating a morning briefing; reporting what is done and what remains on a goal; writing a project status update; and producing an action-item list from meeting notes.
 \end{enumerate}
 
-Every \texttt{SKILL.md} file contains three sections: (1) \textbf{Applicability Conditions} --- when the skill should be used; (2) \textbf{Execution Policy} --- a numbered list of steps the agent must follow; and (3) \textbf{Termination Criteria} --- when the skill is done or should stop. In Condition~A, the same 20 skills are represented as flat JSON schema blocks loaded into the system prompt all at once. Two library sizes will be tested --- 10 skills and 20 skills --- to see whether the performance gap between the two conditions grows as the skill library gets larger.
+Each skill file has three parts: (1) when the skill should be used; (2) the steps the agent must follow; and (3) how the agent knows when the skill is finished. In Setup A, the same 20 skills are written as a flat JSON list instead.
 
-\subsection{Tasks}
+The study will be run twice: once with 10 skills and once with all 20, to see whether the gap between the two setups grows as more skills are added.
 
-A set of 40 tasks will be used, divided into three levels of difficulty. All task examples are drawn from the three real-life skill domains defined above.
+\subsection{The Tasks}
+
+Forty tasks will be used, split into three levels:
 
 \begin{itemize}
-    \item \textbf{Level 1 --- Single-skill tasks (15 tasks):} The agent needs exactly one skill to complete the task. Examples: \textit{``Search the web for the latest developments in autonomous AI agents and return a three-point summary.''} Or: \textit{``Draft a formal email reply declining a meeting invitation politely.''} Or: \textit{``Create a prioritised to-do list from the following goals for today.''}
+    \item \textbf{Level 1 --- One skill needed (15 tasks):} The agent only needs one skill to finish the task. Examples: \textit{``Search the web for the latest news on autonomous AI and give me three key points.''} Or: \textit{``Draft a polite email declining a meeting invitation.''} Or: \textit{``Make a to-do list from these goals.''}
 
-    \item \textbf{Level 2 --- Two-skill tasks (15 tasks):} The agent needs to use two skills in order. Examples: \textit{``Search for the top five project management tools and then draft a short email recommending the best one to my team.''} Or: \textit{``Verify whether the claim in this message is factually accurate online, and then write a reply to the sender with the result.''}
+    \item \textbf{Level 2 --- Two skills needed (15 tasks):} The agent needs two skills, one after the other. Examples: \textit{``Search for the top five project management tools, then draft an email recommending the best one to my team.''} Or: \textit{``Check whether this claim is true online, then write a reply to the sender with the answer.''}
 
-    \item \textbf{Level 3 --- Multi-skill tasks (10 tasks):} The agent needs three or more skills, with at least one decision point in the middle based on what a previous skill returned. Examples: \textit{``Find the three most-discussed AI research papers this week, summarise each one in two sentences, and generate a formatted morning briefing I can share with my team.''} Or: \textit{``Check online whether the scheduled event is still happening, update my to-do list accordingly, and draft a message to the group informing them of any changes.''}
+    \item \textbf{Level 3 --- Three or more skills needed (10 tasks):} The agent needs several skills and must make a decision in the middle based on what it found. Examples: \textit{``Find the three most talked-about AI papers this week, summarise each one in two sentences, and write a morning briefing for my team.''} Or: \textit{``Check whether this event is still happening online, update my to-do list, and send a message to the group with any changes.''}
 \end{itemize}
 
-Every task is run under both conditions and with all four model backends. Each task is repeated three times to allow averages and standard deviations to be reported. This gives a total of $40 \times 2 \times 4 \times 3 = 960$ individual agent runs.
+Every task is run in both setups and with all four AI models, repeated three times each. That gives a total of $40 \times 2 \times 4 \times 3 = 960$ runs.
 
-\subsection{Measures}
+\subsection{What Gets Measured}
 
 \begin{itemize}
-    \item \textbf{Task Completion Rate:} Was the final answer correct? Text extraction tasks will be scored using the ANLS* metric \cite{anlsstar_2024}, which gives partial credit for nearly-correct answers. File and web tasks will use a simple pass or fail score.
+    \item \textbf{Did the agent finish the task correctly?} The final answer is checked against a known correct answer. Text tasks use the ANLS* scoring method \cite{anlsstar_2024}, which gives partial credit for nearly-correct answers. Other tasks get a simple pass or fail.
 
-    \item \textbf{Hallucinated Skill Calls:} How many times did the agent try to call a skill that does not exist, or call a real skill in a situation that violates its applicability conditions? This is recorded directly from the OpenClaw JSONL logs.
+    \item \textbf{Did the agent try to use a skill that does not exist?} Every time the agent calls a skill name that is not in the library, or uses a skill in a situation it is not meant for, that is counted as an error. These are read directly from the OpenClaw log files.
 
-    \item \textbf{Trajectory Compliance Score:} Did the agent follow the numbered steps in the skill's execution policy in the correct order? Each task run is scored by comparing the log of agent actions against the ground-truth policy for the relevant skill.
+    \item \textbf{Did the agent follow the steps inside the skill file?} The steps the agent actually took are checked against the steps written in the skill file. A score is given based on how many steps were followed in the right order.
 
-    \item \textbf{Prompt Token Count:} How many tokens were in the agent's input at each reasoning step? For local models, this comes from the Ollama API response. For cloud models, it comes from the API response metadata.
+    \item \textbf{How many tokens did the agent use?} Token counts come from the Ollama server logs for local models and from the API response for cloud models. This shows directly how much memory the agent was using at each step.
 
-    \item \textbf{Latency:} How long did each task take from start to finish, measured in seconds and averaged across all three repetitions.
+    \item \textbf{How long did each task take?} Time is measured from when the task was sent to when the final answer came back.
 
-    \item \textbf{Inference Cost:} For cloud models, cost is taken from the API billing records (tokens used multiplied by the published price per million tokens). For local models, cost is calculated from power consumption measured with \texttt{powermetrics} on Mac or \texttt{powertop} on Linux \cite{tokenpowerbench_2024}, multiplied by the local electricity rate.
+    \item \textbf{How much did each run cost?} For cloud models, cost comes from the API billing (tokens used multiplied by the price per million tokens). For local models, power is measured using \texttt{powermetrics} on Mac or \texttt{powertop} on Linux \cite{tokenpowerbench_2024} and converted to a cost using the local electricity rate.
 \end{itemize}

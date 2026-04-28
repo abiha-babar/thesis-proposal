@@ -11,14 +11,14 @@ This works well when there are only a few tools. The problem comes when the numb
 
 A different approach is now being used in the field. Instead of loading all tool descriptions at once, some frameworks store each capability as a separate file. The agent only sees a short list of tool names and one-line descriptions to start with. When it decides it needs a specific tool, it loads the full instructions for that tool at that moment. Once the tool is done, those instructions are unloaded. This step-by-step approach is called \textit{Progressive Disclosure} and it is built into the OpenClaw autonomous agent framework \cite{openclaw_2025} through its \texttt{SKILL.md} file system.
 
-The problem is that nobody has done a proper, honest test to find out whether progressive disclosure actually works better. The developers of OpenClaw claim it is more efficient, but there is no independent comparison. This thesis will carry out that test.
+The problem is that nobody has done a proper, honest test to find out whether progressive disclosure actually works better. The developers of OpenClaw claim it is more efficient, but that claim has never been independently tested. This thesis will carry out that test.
 
 \subsection{Statement of Objectives}
 
 This thesis will do three things:
 
 \begin{enumerate}
-    \item Compare how accurately an AI agent completes tasks when all tools are loaded at once (traditional flat tool use) versus when tools are loaded one at a time as needed (progressive disclosure via OpenClaw \cite{openclaw_2025}). The test will be run using two local models --- \texttt{gemma4:4b} by Google DeepMind \cite{gemma4_2026} and \texttt{qwen3.5:4b} by Alibaba \cite{qwen3_2025}, both run through Ollama \cite{ollama_2024} --- and two cloud models --- Gemini 3.1 Pro by Google \cite{google_gemini_2025} as the primary and GPT-4o by OpenAI \cite{openai_gpt4o_2024} as a secondary comparison.
+    \item Test how accurately an AI agent finishes tasks when all tools are loaded at once (the standard way) versus when tools are loaded one at a time as needed (progressive disclosure via OpenClaw \cite{openclaw_2025}). The test will be run using two local models --- \texttt{gemma4:4b} by Google DeepMind \cite{gemma4_2026} and \texttt{qwen3.5:4b} by Alibaba \cite{qwen3_2025}, both run through Ollama \cite{ollama_2024} --- and two cloud models --- Gemini 3.1 Pro by Google \cite{google_gemini_2025} as the primary and GPT-4o by OpenAI \cite{openai_gpt4o_2024} as a second cloud reference.
 
     \item Measure how many tokens are used per task under each approach, and how that changes as the number of available tools grows from 10 to 20. Token count is important because it directly determines cost for cloud models and speed for local models.
 
